@@ -7,7 +7,7 @@ const home = [
             {
                 path: "home",
                 name: "user-home",
-                component: () => import("../pages/user/Home.vue"),
+                component: () => import("../pages/user/index.vue"),
             },
         ],
     },
