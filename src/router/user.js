@@ -2,12 +2,12 @@
 const home = [
     {
         path: "/",
-        component: () => import("../layouts/user.vue"),
+        component: () => import("../views/user/HomeView.vue"),
         children: [
             {
                 path: "home",
                 name: "user-home",
-                component: () => import("../pages/user/index.vue"),
+                component: () => import("../pages/user/HomePage.vue"),
             },
         ],
     },

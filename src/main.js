@@ -24,7 +24,7 @@ import "./assets/vendor/select2/select2.js";
 import "./assets/vendor/daterangepicker/moment.js";
 import "./assets/vendor/daterangepicker/daterangepicker.js";
 import "./assets/vendor/slick/slick.min.js";
-// import "./assets/js/slick-custom.js";
+import "./assets/js/slick-custom.js";
 // import "./assets/vendor/parallax100/parallax100.js";
 import "./assets/vendor/MagnificPopup/jquery.magnific-popup.min.js";
 import "./assets/vendor/isotope/isotope.pkgd.min.js";
