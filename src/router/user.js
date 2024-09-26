@@ -11,5 +11,9 @@ const home = [
             },
         ],
     },
+    {
+        path: "/products",
+        component: () => import("../views/user/ProductsView.vue"),
+    },
 ];
 export default home;
