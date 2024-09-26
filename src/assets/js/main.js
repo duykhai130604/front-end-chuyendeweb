@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    "use strict";
 
     // Load page
     const animsitionElements = document.querySelectorAll(".animsition");
@@ -9,16 +8,15 @@ document.addEventListener("DOMContentLoaded", function () {
             element.classList.remove('fade-in');
         }, 15000000);
     });
-
     // Back to top button
     const myBtn = document.getElementById("myBtn");
     const windowH = window.innerHeight / 2;
 
     window.addEventListener('scroll', function () {
         if (window.scrollY > windowH) {
-            //myBtn.style.display = 'flex';   
+            myBtn.style.display = 'flex';   
         } else {
-            //myBtn.style.display = 'none';
+            myBtn.style.display = 'none';
         }
     });
 
@@ -99,15 +97,15 @@ document.addEventListener("DOMContentLoaded", function () {
         e.stopPropagation();
     });
 
-    // Isotope (requires isotope.js)
-   // const topeContainer = document.querySelector('.isotope-grid');
+    //Isotope (requires isotope.js)
+    const topeContainer = document.querySelector('.isotope-grid');
     const filterButtons = document.querySelectorAll('.filter-tope-group button');
 
     filterButtons.forEach((button) => {
         button.addEventListener('click', function () {
-            //const filterValue = this.getAttribute('data-filter');
+            const filterValue = this.getAttribute('data-filter');
             // Assuming you have Isotope loaded
-            // topeContainer.isotope({ filter: filterValue }); // Uncomment if using Isotope
+             topeContainer.isotope({ filter: filterValue }); // Uncomment if using Isotope
         });
     });
 
@@ -199,4 +197,5 @@ document.addEventListener("DOMContentLoaded", function () {
     hideModal1Button.addEventListener('click', function () {
         modal1.classList.remove('show-modal1');
     });
+
 });

@@ -30,6 +30,6 @@ import "./assets/vendor/MagnificPopup/jquery.magnific-popup.min.js";
 import "./assets/vendor/isotope/isotope.pkgd.min.js";
 import "./assets/vendor/sweetalert/sweetalert.min.js";
 import "./assets/vendor/perfect-scrollbar/perfect-scrollbar.min.js";
-import "./assets/js/main.js";
+// import "./assets/js/main.js";
 // Khởi tạo Vue app và sử dụng router
 createApp(App).use(router).mount('#app');
