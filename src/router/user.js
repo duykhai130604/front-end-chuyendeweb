@@ -10,10 +10,6 @@ const home = [
                 component: () => import("../pages/user/HomePage.vue"),
             },
         ],
-    },
-    {
-        path: "/products",
-        component: () => import("../views/user/ProductsView.vue"),
-    },
+    }
 ];
 export default home;
