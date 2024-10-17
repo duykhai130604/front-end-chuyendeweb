@@ -1,6 +1,8 @@
-import { createApp } from 'vue';
+import { createApp } from 'vue'; 
 import App from './App.vue';
 import router from './router/index.js';
+import axios from 'axios';
+
 // Import CSS files
 import "./assets/vendor/bootstrap/css/bootstrap.min.css";
 import './assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css';
@@ -16,8 +18,8 @@ import './assets/vendor/MagnificPopup/magnific-popup.css';
 import './assets/vendor/perfect-scrollbar/perfect-scrollbar.css';
 import './assets/css/util.css';
 import './assets/css/main.css';
+
 // Import JavaScript files
-// import "./assets/vendor/bootstrap/js/bootstrap.min.js";
 import "./assets/vendor/animsition/js/animsition.js";
 import "./assets/vendor/bootstrap/js/popper.js";
 import "./assets/vendor/select2/select2.js";
@@ -25,11 +27,18 @@ import "./assets/vendor/daterangepicker/moment.js";
 import "./assets/vendor/daterangepicker/daterangepicker.js";
 import "./assets/vendor/slick/slick.min.js";
 import "./assets/js/slick-custom.js";
-// import "./assets/vendor/parallax100/parallax100.js";
 import "./assets/vendor/MagnificPopup/jquery.magnific-popup.min.js";
 import "./assets/vendor/isotope/isotope.pkgd.min.js";
 import "./assets/vendor/sweetalert/sweetalert.min.js";
 import "./assets/vendor/perfect-scrollbar/perfect-scrollbar.min.js";
-// import "./assets/js/main.js";
-// Khởi tạo Vue app và sử dụng router
-createApp(App).use(router).mount('#app');
+// Tạo một instance của Vue app
+const app = createApp(App);
+
+// Cài đặt Axios cho toàn bộ ứng dụng
+app.config.globalProperties.$axios = axios;
+
+// Sử dụng router
+app.use(router);
+
+// Mount ứng dụng
+app.mount('#app');
