@@ -4,9 +4,7 @@
             <div class="page-inner">
                 <div class="page-header">
                     <h3 class="fw-bold mb-3">Danh mục</h3>
-                    <a href="addcategory.html">
-                        <div class="btn btn-success mx-5">Add new</div>
-                    </a>
+                    <div class="btn btn-success mx-5" @click="goToAddCategory()">Add new</div>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
@@ -19,7 +17,7 @@
                                     <table id="basic-datatables" class="display table table-striped table-hover">
                                         <thead>
                                             <tr>
-                                                <th>Id</th>
+                                                <th>STT</th>
                                                 <th>Name</th>
                                                 <th>Parent</th>
                                                 <th>Created at</th>
@@ -86,19 +84,22 @@ export default {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/encrypt/' + id);
                 this.idEncode = response.data.encrypted_id;
+                console.log(this.idEncode);
                 this.$router.push({
                     name: 'edit-category',
-                    params: { idEncode: this.idEncode }, 
-                    query: { categories: JSON.stringify(this.categories) } 
+                    params: { idEncode: this.idEncode }
                 });
             } catch (error) {
                 console.error("There was an error fetching categories:", error);
             }
+        },
+        goToAddCategory() {
+            this.$router.push({ name: 'add-category' });
         }
     },
     created() {
         this.getCategoriesByPage();
-        
+
     }
 };
 </script>

@@ -7,8 +7,9 @@
             <!-- Tên danh mục -->
             <div class="mb-3">
                 <label for="categoryName" class="form-label">Tên danh mục</label>
-                <input type="text" class="form-control" id="categoryName" v-model="category.name"
-                    placeholder="Nhập tên danh mục" />
+                    <input type="text" class="form-control" id="categoryName" v-model="category.name"
+                    placeholder="Nhập tên danh mục" @input="validateInput()" />
+                <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
             </div>
             <!-- Danh mục cha -->
             <div class="mb-3">
@@ -39,38 +40,46 @@ export default {
                 parent_id: null,
             },
             categories: [],
+            parentCategories: [],
+            errorMessage: '', 
         };
     },
     computed: {
         idEncode() {
             return this.$route.params.idEncode;
         },
-        parentCategories() {
-            return this.categories.filter(parent => parent.parent_id === 0);
-        }
     },
     methods: {
         async fetchCategory() {
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/api/category/${this.idEncode}`);
                 this.category = response.data;
-                console.log(this.categories);
 
             } catch (error) {
                 console.error("There was an error fetching the category:", error);
             }
         },
+        async getCategoriesByPage() {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/categories');
+                this.categories = response.data.data;
+                this.parentCategories = this.categories.filter(category => category.parent_id === 0)
+            } catch (error) {
+                console.error("There was an error fetching categories:", error);
+            }
+        },
+        validateInput() {
+            const regex = /^(?!\s)(?!.*\s{2,})[a-zA-ZÀ-ỹà-ỹ0-9\s_-]{1,255}$/;
+            if (!regex.test(this.category.name)) {
+                this.errorMessage = 'Tên danh mục không được chứa ký tự đặc biệt và không quá 255 ký tự và không được bỏ trống!!!';
+            } else {
+                this.errorMessage = '';
+            }
+        },
     },
     created() {
         this.fetchCategory();
-        const categories = this.$route.query.categories;
-        if (categories) {
-            try {
-                this.categories = JSON.parse(categories);
-            } catch (error) {
-                console.error("Error parsing categories from query:", error);
-            }
-        }
+        this.getCategoriesByPage();
     },
 };
 </script>
