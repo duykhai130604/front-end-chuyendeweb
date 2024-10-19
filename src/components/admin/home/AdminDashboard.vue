@@ -3,62 +3,72 @@
         <SideBarComponent />
         <div class="main-panel">
             <div class="main-header">
-                <HeaderComponent/>
-                <NavbarComponent/>
+                <HeaderComponent />
+                <NavbarComponent />
             </div>
             <div class="container">
                 <div class="page-inner">
+                    <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+                        <div>
+                            <h3 class="fw-bold mb-3">Dashboard</h3>
+
+                        </div>
+
+                    </div>
                     <div class="row">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="d-flex align-items-center">
-                                        <h4 class="card-title">Product list</h4>
-                                        <a href="./addNewProduct.html" class="ms-auto"><button
-                                                class="btn btn-primary btn-round ms-auto" data-bs-toggle="modal"
-                                                data-bs-target="#addRowModal">
-                                                <i class="fa fa-plus"></i>
-                                                Add new product
-                                            </button></a>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="card card-stats card-round">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-icon">
+                                            <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col col-stats ms-3 ms-sm-0">
+                                            <div class="numbers">
+                                                <p class="card-category">Users</p>
+                                                <h4 class="card-title">199</h4>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="card card-stats card-round">
                                 <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="display table table-striped table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>Id</th>
-                                                    <th>Name</th>
-                                                    <th>Price</th>
-                                                    <th style="width: 10%">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>#4</td>
-                                                    <td>Áo sơ mi nam Tommy Hilfiger</td>
-                                                    <td>1,800,000</td>
-                                                    <td>
-                                                        <div class="form-button-action">
-                                                            <button type="button" data-bs-toggle="tooltip"
-                                                                title="Edit Task"
-                                                                class="btn btn-link btn-primary btn-lg">
-                                                                <i class="fa fa-edit"></i>
-                                                            </button>
-                                                            <button type="button" data-bs-toggle="tooltip"
-                                                                title="Remove" class="btn btn-link btn-danger">
-                                                                <i class="fa fa-times"></i>
-                                                            </button>
-                                                            <!-- Variants Button -->
-                                                            <button type="button" data-bs-toggle="tooltip"
-                                                                title="Manage Variants" class="btn btn-link btn-info">
-                                                                <i class="fa fa-list"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div class="row align-items-center">
+                                        <div class="col-icon">
+                                            <div class="icon-big text-center icon-success bubble-shadow-small">
+                                                <i class="fas fa-luggage-cart"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col col-stats ms-3 ms-sm-0">
+                                            <div class="numbers">
+                                                <p class="card-category">Sales</p>
+                                                <h4 class="card-title">$ 1,345</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="card card-stats card-round">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-icon">
+                                            <div class="icon-big text-center icon-secondary bubble-shadow-small">
+                                                <i class="far fa-check-circle"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col col-stats ms-3 ms-sm-0">
+                                            <div class="numbers">
+                                                <p class="card-category">Order</p>
+                                                <h4 class="card-title">576</h4>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -66,7 +76,7 @@
                     </div>
                 </div>
             </div>
-            <FooterComponent/>
+            <FooterComponent />
         </div>
     </div>
 </template>
@@ -78,7 +88,10 @@ import FooterComponent from '../FooterComponent.vue';
 export default {
     name: 'AdminDashboard',
     components: {
-        SideBarComponent, NavbarComponent, HeaderComponent,FooterComponent
+        SideBarComponent, NavbarComponent, HeaderComponent, FooterComponent
     },
 }
 </script>
+<style>
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+</style>
