@@ -1,4 +1,3 @@
-
 const home = [
     {
         path: "/",
@@ -12,6 +11,7 @@ const home = [
     {
         path: "/login",
         component: () => import("../views/user/LoginView.vue"),
+        name: "login"
     },
     {
         path: "/register",

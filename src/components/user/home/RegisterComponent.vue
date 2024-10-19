@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import axios from "axios"
 export default {
     data() {
         return {
@@ -54,7 +55,7 @@ export default {
             errors: {} // Biến để lưu các thông báo lỗi
         };
     },
-    methods: {
+methods: {
         onFileChange(event) {
             this.avatar = event.target.files[0]; // Lưu file vào biến avatar
         },
@@ -102,21 +103,10 @@ export default {
                 formData.append('avatar', this.avatar);
 
                 try {
-                    const response = await fetch('http://localhost:8000/api/register', {
-                        method: 'POST',
-                        body: formData // Gửi FormData thay vì JSON
-                    });
-
-                    if (!response.ok) {
-                        // Nếu phản hồi không thành công
-                        const errorData = await response.json();
-                        // Hiển thị lỗi cho các trường cụ thể nếu có
-                        this.errors = errorData.errors || {}; // Giả sử API trả về lỗi dưới dạng { errors: { field: 'error message' } }
-                    } else {
-                        const data = await response.json();
-                        console.log(data);
-                        this.$router.push('/login'); // Chuyển hướng sau khi đăng ký thành công
-                    }
+                    const response = await axios.post('http://localhost:8000/api/register', formData);
+                    if (response){
+                        this.$router.push({ name: 'login' });                    }
+                    
                 } catch (error) {
                     console.error('Error:', error);
                     this.errors.global = 'An unexpected error occurred. Please try again later.'; // Thông báo lỗi toàn cầu
