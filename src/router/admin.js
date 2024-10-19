@@ -14,7 +14,8 @@ const admin = [
     {
         path: "/admin/productVariants",
         component: () => import("../views/admin/ProductVariantsView.vue"),
-    }
+    },
+    {
         path: "/admin/categories",
         component: () => import("../views/admin/category/ListCategoriesView.vue"),
         name:"list-categories"
