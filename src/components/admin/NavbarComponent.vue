@@ -4,11 +4,17 @@
             <nav class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
                 <div class="input-group">
                     <div class="input-group-prepend">
-                        <button type="submit" class="btn btn-search pe-1">
+                        <button type="submit" class="btn btn-search pe-1" @click.prevent="search">
                             <i class="fa fa-search search-icon"></i>
                         </button>
                     </div>
-                    <input type="text" placeholder="Search ..." class="form-control" />
+                    <input
+                        type="text"
+                        placeholder="Search ..."
+                        class="form-control"
+                        v-model="keyword"
+                        @input="search"
+                    />
                 </div>
             </nav>
 
@@ -47,8 +53,7 @@
                                     <div class="u-text">
                                         <h4>Hizrian</h4>
                                         <p class="text-muted">hello@example.com</p>
-                                        <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">View
-                                            Profile</a>
+                                        <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">View Profile</a>
                                     </div>
                                 </div>
                             </li>
@@ -73,5 +78,17 @@
 <script>
 export default {
     name: 'NavbarComponent',
+    data() {
+        return {
+            keyword: ''
+        };
+    },
+    methods: {
+        search() {
+            this.$emit('search', this.keyword);
+        }
+    }
 };
 </script>
+
+
