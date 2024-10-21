@@ -1,6 +1,6 @@
 <template>
     <div style="height: auto;">
-        <ckeditor :editor="editor" v-model="editorData" @ready="onReady" />
+        <ckeditor :editor="editor" v-model="localData" @ready="onReady" />
     </div>
 </template>
 
@@ -9,11 +9,22 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 export default {
     name: 'CKEditorComponent',
+    props: {
+        modelValue: String
+    },
     data() {
         return {
             editor: ClassicEditor,
-            editorData: ''
+            localData: this.modelValue || ''
         };
+    },
+    watch: {
+        localData(newValue) {
+            this.$emit('update:modelValue', newValue);
+        },
+        modelValue(newValue) {
+            this.localData = newValue;
+        }
     },
     methods: {
         onReady(editor) {
@@ -22,7 +33,3 @@ export default {
     }
 };
 </script>
-
-<style>
-/* Bạn có thể thêm style cho CKEditor ở đây */
-</style>
