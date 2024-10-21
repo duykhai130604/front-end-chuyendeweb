@@ -26,7 +26,7 @@
             <div class="d-flex justify-content-end">
                 <button type="button" class="btn btn-danger me-2" @click="cancel">Hủy</button>
                 <button type="submit" class="btn btn-primary"
-                    :disabled="errorMessage != '' || category.name== '' || parentCategory == null">Lưu</button>
+                    :disabled="errorMessage != '' || category.name == '' || parentCategory == null">Lưu</button>
             </div>
         </form>
     </div>
@@ -62,10 +62,10 @@ export default {
                 console.error("There was an error fetching the category:", error);
             }
         },
-        async getCategoriesByPage() {
+        async getCategories() {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/categories');
-                this.categories = response.data.data;
+                const response = await axios.get('http://127.0.0.1:8000/api/getAllCategories');
+                this.categories = response.data;
                 this.parentCategories = this.categories.filter(category => {
                     return category.parent_id === 0 && (this.category && category.id != this.category.id);
                 });
@@ -93,8 +93,10 @@ export default {
                     status: 1
                 };
                 const response = await axios.post('http://127.0.0.1:8000/api/update-category', payload);
-                if (response.status === 200) {
-                    alert("Sửa danh mục thành công!!!");
+                if (response.data == 0) {
+                    alert("Danh mục bị trùng!!!")
+                } if (response.data == 1) {
+                    alert("Danh mục đã được sửa!");
                     this.$router.push({ name: 'list-categories' });
                 }
             } catch (error) {
@@ -111,7 +113,7 @@ export default {
     },
     created() {
         this.fetchCategory();
-        this.getCategoriesByPage();
+        this.getCategories();
     },
 };
 </script>
