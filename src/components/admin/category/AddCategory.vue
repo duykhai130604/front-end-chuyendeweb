@@ -72,9 +72,11 @@ export default {
                         parent_id: this.parentCategory,
                         status: 1
                     });
-                    if (response) {
-                        alert("Danh mục đã được thêm!");
-                        this.$router.push({ name: 'list-categories' });
+                    if (response.data ==0) {
+                        alert("Danh mục bị trùng!!!")
+                    }if (response.data ==1) {
+                    alert("Danh mục đã được thêm!");
+                    this.$router.push({ name: 'list-categories' });
                     }
                 }
             } catch (error) {
