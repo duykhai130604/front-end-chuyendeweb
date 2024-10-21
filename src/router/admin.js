@@ -1,34 +1,41 @@
 const admin = [
     {
         path: "/admin",
-        component: () => import("../views/admin/HomeView.vue"),
+        component: () => import("../views/admin/product/HomeView.vue"),
     },
     {
         path: "/admin/products",
-        component: () => import("../views/admin/ProductListView.vue"),
+        component: () => import("../views/admin/product/ProductListView.vue"),
     },
     {
         path: "/admin/products/addNewProduct",
-        component: () => import("../views/admin/AddNewProductView.vue"),
+        component: () => import("../views/admin/product/AddNewProductView.vue"),
+    },
+    {
+        path: '/admin/products/edit/:id',
+        name: 'editProduct',
+        component: ()=> import("../views/admin/product/EditProductView.vue"),
+        props: true
     },
     {
         path: "/admin/productVariants",
-        component: () => import("../views/admin/ProductVariantsView.vue"),
+        component: () => import("../views/admin/product/ProductVariantsView.vue"),
     },
     {
         path: "/admin/categories",
         component: () => import("../views/admin/category/ListCategoriesView.vue"),
-        name:"list-categories"
+        name: "list-categories"
     },
     {
         path: "/admin/edit-category/:idEncode",
         component: () => import("../views/admin/category/EditCategoryView.vue"),
-        name:"edit-category"
+        name: "edit-category"
     },
     {
         path: "/admin/add-category",
         component: () => import("../views/admin/category/AddCategoryView.vue"),
-        name:"add-category"
+        name: "add-category"
     }
 ];
+
 export default admin;
