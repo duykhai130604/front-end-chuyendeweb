@@ -34,8 +34,25 @@ const admin = [
     {
         path: "/admin/add-category",
         component: () => import("../views/admin/category/AddCategoryView.vue"),
-        name: "add-category"
-    }
+        name:"add-category"
+    }  ,  
+    //blog
+    {
+        path: "/admin/blogs",
+        component: () => import("../views/admin/blog/ListBlogsView.vue"),
+        name: "list-blogs"
+    },
+    {
+        path: "/admin/edit-blog/:idEncode",
+        component: () => import("../views/admin/blog/EditBlogView.vue"),
+        name: "edit-blog"
+    },
+    {
+        path: "/admin/add-blog",
+        component: () => import("../views/admin/blog/AddBlogView.vue"),
+        name: "add-blog"
+    } 
+
 ];
 
 export default admin;
