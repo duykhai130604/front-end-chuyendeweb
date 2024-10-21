@@ -29,6 +29,7 @@ import ListBlogs from "@/components/admin/blog/ListBlogs.vue";
 import NavbarComponent from "@/components/admin/NavbarComponent.vue";
 import HeaderComponent from "@/components/admin/HeaderComponent.vue";
 import SideBarComponent from "@/components/admin/SideBarComponent.vue";
+
 export default {
     components: {
         ListBlogs, HeaderComponent, NavbarComponent, SideBarComponent

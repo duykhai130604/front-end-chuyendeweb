@@ -46,12 +46,12 @@
 
             <!-- Tác giả -->
             <div class="mb-3">
-                <label for="author" class="form-label">Tác giả</label>
+                <label for="user_id" class="form-label">Tác giả</label>
                 <input
                     type="text"
                     class="form-control"
-                    id="author"
-                    v-model="blog.author"
+                    id="user_id"
+                    v-model="blog.user_id"
                     placeholder="Nhập tên tác giả"
                     required
                 />
@@ -69,7 +69,7 @@
             <!-- Buttons -->
             <div class="d-flex justify-content-end">
                 <button type="button" class="btn btn-danger me-2" @click="cancel">Hủy</button>
-                <button type="submit" class="btn btn-primary" :disabled="errorTitle || !blog.content || !blog.author">Lưu</button>
+                <button type="submit" class="btn btn-primary" :disabled="errorTitle || !blog.content || !blog.user_id">Lưu</button>
             </div>
         </form>
     </div>
@@ -84,8 +84,7 @@ export default {
             blog: {
                 title: '',
                 content: '',
-                author: '',
-                status: 1, // 1: Công khai, 0: Nháp
+                user_id: '',
                 thumbnail: null
             },
             errorTitle: '',
@@ -110,7 +109,7 @@ export default {
         },
         async fetchBlog() {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/blog/${this.idEncode}`);
+                const response = await axios.get(`http://127.0.0.1:8000/api/blogs/${this.idEncode}`);
                 this.blog = response.data;
             } catch (error) {
                 console.error("Có lỗi xảy ra khi lấy thông tin blog:", error);
@@ -121,8 +120,7 @@ export default {
                 const formData = new FormData();
                 formData.append('title', this.blog.title);
                 formData.append('content', this.blog.content);
-                formData.append('author', this.blog.author);
-                formData.append('status', this.blog.status);
+                formData.append('user_id', this.blog.user_id);
                 if (this.blog.thumbnail) {
                     formData.append('thumbnail', this.blog.thumbnail);
                 }

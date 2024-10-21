@@ -20,7 +20,6 @@
                                                 <th>STT</th>
                                                 <th>Tiêu đề</th>
                                                 <th>Tác giả</th>
-                                                <th>Trạng thái</th>
                                                 <th>Ngày tạo</th>
                                                 <th>Ngày cập nhật</th>
                                                 <th></th>
@@ -30,8 +29,7 @@
                                             <tr v-for="(blog, index) in blogs" :key="blog.id">
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ blog.title }}</td>
-                                                <td>{{ blog.author }}</td>
-                                                <td>{{ blog.status === 1 ? 'Công khai' : 'Nháp' }}</td>
+                                                <td>{{ getName(blog.user_id) }}</td>
                                                 <td>{{ formatDate(blog.created_at) }}</td>
                                                 <td>{{ formatDate(blog.updated_at) }}</td>
                                                 <td>
@@ -58,14 +56,15 @@ export default {
     data() {
         return {
             blogs: [],
-            idEncode: 0
+            idEncode: 0,
+            users: {},
         };
     },
     methods: {
         async getBlogs() {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/blogs');
-                this.blogs = response.data.data;
+                this.blogs = response.data;               
             } catch (error) {
                 console.error("Có lỗi xảy ra khi lấy danh sách blog:", error);
             }
@@ -75,11 +74,10 @@ export default {
             const year = d.getFullYear();
             const month = String(d.getMonth() + 1).padStart(2, '0');
             const day = String(d.getDate()).padStart(2, '0');
-
             const hours = String(d.getHours()).padStart(2, '0');
             const minutes = String(d.getMinutes()).padStart(2, '0');
             const seconds = String(d.getSeconds()).padStart(2, '0');
-
+            
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         },
         async getEncrypt(id) {
@@ -105,12 +103,25 @@ export default {
                 }
             }
         },
+        async getNameAuthor(){
+            const ids = this.blogs.map(blog => blog.user_id).filter(user_id => user_id  !== null);
+            if (ids.length) {
+                const response = await axios.get(`http://127.0.0.1:8000/api/get-authorname?ids=${ids.join(',')}`);
+                response.data.forEach(element => {
+                    this.users[element.id] = element.name; // Gán tên tác giả cho user
+                });
+            }
+        },
+        getName(id) {
+            return this.users[id] || "Unknown"; // Nếu không có tên thì trả về "Unknown"
+        },
         goToAddBlog() {
             this.$router.push({ name: 'add-blog' });
-        }
+        },
     },
-    created() {
-        this.getBlogs();
+    async created() {
+        await this.getBlogs(); // Đợi lấy danh sách blog trước
+        await this.getNameAuthor(); // Sau đó gọi hàm lấy tên tác giả
     }
 };
 </script>
