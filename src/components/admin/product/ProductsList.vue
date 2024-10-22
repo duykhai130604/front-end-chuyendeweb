@@ -48,8 +48,11 @@
                                                             </router-link>
                                                             <ButtonComponent btnClass="btn-link btn-danger"
                                                                 icon="fa fa-times" @click="confirmDelete(product.id)" />
-                                                            <ButtonComponent btnClass="btn-link btn-info"
-                                                                icon="fa fa-list" />
+
+                                                            <router-link to="/admin/productVariants">
+                                                                <ButtonComponent btnClass="btn-link btn-info"
+                                                                    icon="fa fa-list" />
+                                                            </router-link>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -150,15 +153,18 @@ export default {
             });
         },
         confirmDelete(id) {
-            if (this.isDeleting) return;
-            this.isDeleting = true;
+            if (this.isDeleting) {
+                return;
+            }
 
+            this.isDeleting = true;
             if (confirm('Are you sure you want to delete this product?')) {
                 this.deleteProduct(id);
             } else {
                 this.isDeleting = false;
             }
         },
+
         deleteProduct(id) {
             const data = JSON.stringify({ id: id });
             const config = {
@@ -184,9 +190,6 @@ export default {
                         alert('An unexpected error occurred.');
                     }
                 })
-                .finally(() => {
-                    this.isDeleting = false;
-                });
         }
     }
 };

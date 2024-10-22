@@ -27,16 +27,19 @@
                                                 v-model="productData.discount" placeholder="Discount"
                                                 :errorMessage="errors.discount" />
                                         </div>
-                                        <div class="col-12 pt-3">
-                                            <LabelComponent text="Category" htmlFor="categorySelect" />
-                                            <select class="form-select form-control-lg" id="categorySelect"
-                                                v-model="productData.category_id">
-                                                <option v-for="category in categories" :key="category.id"
+                                        <div class="col-12">
+                                            <div class="form-check">
+                                                <LabelComponent text="Categories" htmlFor="categorySelect" />
+                                                <div v-for="category in categories" :key="category.id"
                                                     :value="category.id">
-                                                    {{ category.name }}
-                                                </option>
-                                            </select>
-                                            <ErrorMessage :errorMessage="errors.category_id" />
+                                                    <input v-model="productData.categories" name="categories[]" class="form-check-input" type="checkbox" :value="category.id"
+                                                        id="flexCheckDefault">
+                                                    <label class="form-check-label" for="flexCheckDefault">
+                                                        {{ category.name }}
+                                                    </label>
+                                                </div>
+                                                <ErrorMessage :errorMessage="errors.categories" />
+                                            </div>
                                         </div>
                                         <div class="col-12">
                                             <LabelComponent text="Description" htmlFor="description" />
@@ -72,8 +75,8 @@ import FooterComponent from '../FooterComponent.vue';
 import LoadingOverlay from '../../common/LoadingOverlayComponent.vue';
 import ErrorMessage from '../../common/ErrorMessageComponent.vue';
 import InputComponent from '../../common/InputComponent.vue';
-import ButtonComponent from '../../common/ButtonComponent.vue'; 
-import LabelComponent from '../../common/LabelComponent.vue'; 
+import ButtonComponent from '../../common/ButtonComponent.vue';
+import LabelComponent from '../../common/LabelComponent.vue';
 
 export default {
     name: 'AddProduct',
@@ -95,7 +98,7 @@ export default {
                 name: '',
                 price: '',
                 discount: 0,
-                category_id: '',
+                categories: [],
                 desc: ''
             },
             categories: [],
@@ -118,12 +121,14 @@ export default {
             if (this.isLoading) return;
             this.isLoading = true;
             this.loadingPercentage = 0;
+            
             const productData = {
                 name: this.productData.name,
                 price: Number(this.productData.price),
                 discount: Number(this.productData.discount) || 0,
-                category_id: Number(this.productData.category_id),
-                desc: this.productData.desc
+                categories: this.productData.categories, // Gửi mảng danh mục
+                desc: this.productData.desc,
+                status: 1 // Status cố định 1 cho sản phẩm mới
             };
 
             axios.post(`${API_BASE_URL}/admin/addProduct`, productData, {
@@ -131,24 +136,20 @@ export default {
                     this.loadingPercentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                 }
             })
-            .then(response => {
-                this.isLoading = false;
-                alert(response.data.message);
-                this.$router.push('/admin/products');
-            })
-            .catch(error => {
-                this.isLoading = false;
-                if (error.response && error.response.status === 422) {
-                    this.errors = error.response.data.errors;
-                } else {
-                    alert('System error, please try again later');
-                }
-            });
+                .then(response => {
+                    this.isLoading = false;
+                    alert(response.data.message);
+                    this.$router.push('/admin/products');
+                })
+                .catch(error => {
+                    this.isLoading = false;
+                    if (error.response && error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                    } else {
+                        alert('System error, please try again later');
+                    }
+                });
         }
     }
 }
 </script>
-
-<style>
-@import url("../../../assets/admin/assets/font-awesome-4.7.0/css/font-awesome.css");
-</style>
