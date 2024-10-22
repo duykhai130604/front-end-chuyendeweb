@@ -1,7 +1,6 @@
 <template>
     <button
       :class="['btn', btnClass]"
-      @click="$emit('click')"
       :disabled="disabled"
     >
       <i v-if="icon" :class="icon"></i>

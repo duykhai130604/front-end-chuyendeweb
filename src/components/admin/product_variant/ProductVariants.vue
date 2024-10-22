@@ -42,8 +42,6 @@
                                                             <div class="row gutters-xs">
                                                                 <div class="col-auto">
                                                                     <label class="colorinput">
-                                                                        <input name="color" type="checkbox"
-                                                                            value="success" class="colorinput-input" />
                                                                         <span
                                                                             class="colorinput-color bg-success"></span>
                                                                     </label>
@@ -53,69 +51,6 @@
                                                     </td>
                                                     <td>L</td>
                                                     <td>45</td>
-                                                    <td>
-                                                        <div class="form-button-action">
-                                                            <button type="button" data-bs-toggle="tooltip"
-                                                                title="Edit Variant"
-                                                                class="btn btn-link btn-primary btn-lg">
-                                                                <i class="fa fa-edit"></i>
-                                                            </button>
-                                                            <button type="button" data-bs-toggle="tooltip"
-                                                                title="Remove" class="btn btn-link btn-danger">
-                                                                <i class="fa fa-times"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>#2</td>
-                                                    <td>
-                                                        <div class="col-6">
-                                                            <div class="row gutters-xs">
-                                                                <div class="col-auto">
-                                                                    <label class="colorinput">
-                                                                        <input name="color" type="checkbox"
-                                                                            value="primary" class="colorinput-input" />
-                                                                        <span
-                                                                            class="colorinput-color bg-primary"></span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>M</td>
-                                                    <td>30</td>
-                                                    <td>
-                                                        <div class="form-button-action">
-                                                            <button type="button" data-bs-toggle="tooltip"
-                                                                title="Edit Variant"
-                                                                class="btn btn-link btn-primary btn-lg">
-                                                                <i class="fa fa-edit"></i>
-                                                            </button>
-                                                            <button type="button" data-bs-toggle="tooltip"
-                                                                title="Remove" class="btn btn-link btn-danger">
-                                                                <i class="fa fa-times"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>#3</td>
-                                                    <td>
-                                                        <div class="col-6">
-                                                            <div class="row gutters-xs">
-                                                                <div class="col-auto">
-                                                                    <label class="colorinput">
-                                                                        <input name="color" type="checkbox"
-                                                                            value="danger" class="colorinput-input" />
-                                                                        <span class="colorinput-color bg-danger"></span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>XL</td>
-                                                    <td>25</td>
                                                     <td>
                                                         <div class="form-button-action">
                                                             <button type="button" data-bs-toggle="tooltip"
