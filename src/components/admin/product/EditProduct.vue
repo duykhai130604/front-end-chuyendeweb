@@ -8,139 +8,63 @@
             </div>
             <div class="container">
                 <div class="page-inner">
-                    <div class="page-header">
-                        <h3 class="fw-bold mb-3">Add New Product Variant</h3>
-                        <ul class="breadcrumbs mb-3">
-                            <li class="nav-home">
-                                <a href="#">
-                                    <i class="icon-home"></i>
-                                </a>
-                            </li>
-                            <li class="separator">
-                                <i class="icon-arrow-right"></i>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#">Product List</a>
-                            </li>
-                            <li class="separator">
-                                <i class="icon-arrow-right"></i>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#">Manage Product Variants</a>
-                            </li>
-                            <li class="separator">
-                                <i class="icon-arrow-right"></i>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#">Add new Variants</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="card-title">Add new Variant</div>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="form-group">
-                                        <div class="row pt3">
-                                            <div class="col-6">
-                                                <label class="form-label">Color</label>
-                                                <div class="row gutters-xs">
-                                                    <div class="col-auto">
-                                                        <label class="colorinput">
-                                                            <input name="color" type="checkbox" value="dark"
-                                                                class="colorinput-input" />
-                                                            <span class="colorinput-color bg-black"></span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <label class="colorinput">
-                                                            <input name="color" type="checkbox" value="primary"
-                                                                class="colorinput-input" />
-                                                            <span class="colorinput-color bg-primary"></span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <label class="colorinput">
-                                                            <input name="color" type="checkbox" value="secondary"
-                                                                class="colorinput-input" />
-                                                            <span class="colorinput-color bg-secondary"></span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <label class="colorinput">
-                                                            <input name="color" type="checkbox" value="info"
-                                                                class="colorinput-input" />
-                                                            <span class="colorinput-color bg-info"></span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <label class="colorinput">
-                                                            <input name="color" type="checkbox" value="success"
-                                                                class="colorinput-input" />
-                                                            <span class="colorinput-color bg-success"></span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <label class="colorinput">
-                                                            <input name="color" type="checkbox" value="danger"
-                                                                class="colorinput-input" />
-                                                            <span class="colorinput-color bg-danger"></span>
-                                                        </label>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <label class="colorinput">
-                                                            <input name="color" type="checkbox" value="warning"
-                                                                class="colorinput-input" />
-                                                            <span class="colorinput-color bg-warning"></span>
-                                                        </label>
-                                                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div v-if="message" class="alert alert-danger text-center">{{ message }}</div>
+                                    <div v-else class="row">
+                                        <div class="form-group">
+                                            <LabelComponent for="productName" text="Product Name" />
+                                            <InputComponent
+                                                type="text"
+                                                id="productName"
+                                                v-model="productData.name"
+                                                placeholder="Enter name"
+                                            />
+                                            <ErrorMessage :errorMessage="errors.name" />
+
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <LabelComponent for="productPrice" text="Price" />
+                                                    <InputComponent
+                                                        type="text"
+                                                        id="productPrice"
+                                                        v-model="productData.price"
+                                                        placeholder="Price"
+                                                    />
+                                                    <ErrorMessage :errorMessage="errors.price" />
+                                                </div>
+                                                <div class="col-6">
+                                                    <LabelComponent for="discount" text="Discount" />
+                                                    <InputComponent
+                                                        type="text"
+                                                        id="discount"
+                                                        v-model="productData.discount"
+                                                        placeholder="Discount"
+                                                    />
+                                                    <ErrorMessage :errorMessage="errors.discount" />
                                                 </div>
                                             </div>
-                                            <div class="col-6">
-                                                <label class="form-label">Size</label>
-                                                <div class="selectgroup w-100">
-                                                    <label class="selectgroup-item">
-                                                        <input type="radio" name="value" value="50"
-                                                            class="selectgroup-input" checked="" />
-                                                        <span class="selectgroup-button">S</span>
-                                                    </label>
-                                                    <label class="selectgroup-item">
-                                                        <input type="radio" name="value" value="100"
-                                                            class="selectgroup-input" />
-                                                        <span class="selectgroup-button">M</span>
-                                                    </label>
-                                                    <label class="selectgroup-item">
-                                                        <input type="radio" name="value" value="150"
-                                                            class="selectgroup-input" />
-                                                        <span class="selectgroup-button">L</span>
-                                                    </label>
-                                                    <label class="selectgroup-item">
-                                                        <input type="radio" name="value" value="200"
-                                                            class="selectgroup-input" />
-                                                        <span class="selectgroup-button">XL</span>
-                                                    </label>
-                                                </div>
-                                            </div>
+                                            <LabelComponent for="categorySelect" text="Category" />
+                                            <select class="form-select form-control-lg" id="categorySelect"
+                                                v-model="productData.category_id">
+                                                <option v-for="category in categories" :key="category.id"
+                                                    :value="category.id">
+                                                    {{ category.name }}
+                                                </option>
+                                            </select>
+                                            <ErrorMessage :errorMessage="errors.category_id" />
+                                            <LabelComponent for="description" text="Description" />
+                                            <CKEditorComponent v-model="productData.desc" />
+                                            <ErrorMessage :errorMessage="errors.desc" />
                                         </div>
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <label for="email2">Quantity</label>
-                                                <input type="number" class="form-control" id="email2"
-                                                    placeholder="Enter quantity" />
-                                            </div>
-                                            <div class="col-6">
-                                                <label class="pt-3" for="exampleFormControlFile1">Images</label><br>
-                                                <input type="file" class="form-control-file"
-                                                    id="exampleFormControlFile1" />
-                                            </div>
+                                        <div class="card-action">
+                                            <ButtonComponent label="Save change" btnClass="btn-success" @click="submitProduct"
+                                            :disabled="isLoading" />
+                                            <router-link to="/admin/products"
+                                                class="btn btn-danger">Cancel</router-link>
                                         </div>
-                                    </div>
-                                    <div class="card-action">
-                                        <button class="btn btn-success">Submit</button>
-                                        <button class="btn btn-danger">Cancel</button>
                                     </div>
                                 </div>
                             </div>
@@ -149,23 +73,132 @@
                 </div>
             </div>
             <FooterComponent />
+            <LoadingOverlay :isLoading="isLoading" :loadingPercentage="loadingPercentage" />
         </div>
     </div>
 </template>
+
 <script>
-
-
+import { API_BASE_URL } from '../../../utils/config';
+import axios from 'axios';
+import CKEditorComponent from "../../common/CKEditorComponent.vue";
 import SideBarComponent from '../SideBarComponent.vue';
 import NavbarComponent from '../NavbarComponent.vue';
 import HeaderComponent from '../HeaderComponent.vue';
 import FooterComponent from '../FooterComponent.vue';
+import LoadingOverlay from '../../common/LoadingOverlayComponent.vue';
+import ErrorMessage from '../../common/ErrorMessageComponent.vue';
+import InputComponent from '../../common/InputComponent.vue';
+import ButtonComponent from '../../common/ButtonComponent.vue';
+import LabelComponent from '../../common/LabelComponent.vue';
+
 export default {
-    name: 'ProductList',
+    name: 'EditProduct',
     components: {
-        SideBarComponent, NavbarComponent, HeaderComponent, FooterComponent
+        SideBarComponent,
+        NavbarComponent,
+        HeaderComponent,
+        FooterComponent,
+        CKEditorComponent,
+        LoadingOverlay,
+        ErrorMessage,
+        InputComponent,
+        ButtonComponent,
+        LabelComponent,
     },
+    data() {
+        return {
+            productData: {
+                id: '',
+                name: '',
+                price: '',
+                discount: 0,
+                category_id: '',
+                desc: ''
+            },
+            categories: [],
+            errors: {},
+            message: '',
+            isLoading: false,
+            loadingPercentage: 0
+        };
+    },
+    mounted() {
+        const encodedId = this.$route.params.id;
+
+        axios.get(`${API_BASE_URL}/getProductDetails?encodedId=${encodedId}`)
+            .then(response => {
+                const product = response.data.product;
+                console.log("productDetails", product);
+                
+                this.productData = {
+                    id: encodedId,
+                    name: product.name,
+                    price: product.price,
+                    discount: product.discount,
+                    category_id: product.category_id,
+                    desc: product.desc
+                };
+            })
+            .catch(error => {
+                if (error.response && error.response.status === 404) {
+                    this.message = error.response.data.message;
+                    setTimeout(() => {
+                        this.$router.push('/admin/products');
+                    }, 3000);
+                }
+            });
+
+        axios.get(`${API_BASE_URL}/getAllCategories`)
+            .then(response => {
+                this.categories = response.data;
+            })
+            .catch(error => {
+                console.error("Error fetching categories:", error);
+            });
+    },
+    methods: {
+        submitProduct() {
+            if (this.isLoading) return;
+            this.isLoading = true;
+            this.loadingPercentage = 0;
+            const productData = {
+                id: this.productData.id,
+                name: this.productData.name,
+                price: Number(this.productData.price),
+                discount: Number(this.productData.discount) || 0,
+                category_id: String(this.productData.category_id), 
+                desc: this.productData.desc
+            };
+
+            const config = {
+                method: 'post',
+                url: `${API_BASE_URL}/admin/editProduct`,
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(productData)
+            };
+
+            axios.request(config)
+                .then(response => {
+                    this.isLoading = false;
+                    alert(response.data.message);
+                    this.$router.push('/admin/products');
+                })
+                .catch(error => {
+                    this.isLoading = false;
+                    if (error.response && error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                    } else {
+                        alert('System error, please try again later');
+                    }
+                });
+        }
+    }
 }
 </script>
+
 <style>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+@import url("../../../assets/admin/assets/font-awesome-4.7.0/css/font-awesome.css");
 </style>
