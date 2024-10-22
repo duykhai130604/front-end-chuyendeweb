@@ -35,7 +35,8 @@
                                                 <td>
                                                     <a @click="getEncrypt(category.id)"
                                                         class="btn btn-primary btn-sm">Edit</a>
-                                                    <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                                                    <a @click="checkCategoryAsset(category.id)"
+                                                        class="btn btn-danger btn-sm">Delete</a>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -108,7 +109,7 @@ export default {
             }
         },
         getParentCategoryName(parentId) {
-            return this.parentCategories[parentId] || 'No Parent'; // Hoặc bạn có thể trả về một giá trị khác nếu không có danh mục cha
+            return this.parentCategories[parentId] || 'No Parent';
         },
         formatDate(date) {
             const d = new Date(date);
@@ -124,7 +125,6 @@ export default {
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/api/encrypt/${id}`);
                 this.idEncode = response.data.encrypted_id;
-                console.log(this.idEncode);
                 this.$router.push({
                     name: 'edit-category',
                     params: { idEncode: this.idEncode }
@@ -140,6 +140,46 @@ export default {
             if (page < 1 || page > this.totalPages) return;
             this.getCategoriesByPage(page);
         },
+        async checkCategoryAsset(id) {
+            try {
+                const response = await axios.post('http://127.0.0.1:8000/api/category/check-assets', {
+                    id: id,
+                });
+
+                if (response.status === 200) {
+                    // Category can be deleted
+                    if (confirm('Bạn có chắc muốn xóa?')) {
+                        const encryptResponse = await axios.get(`http://127.0.0.1:8000/api/encrypt/${id}`);
+                        const deleteId = encryptResponse.data.encrypted_id;
+                        const deleteResponse = await axios.delete(`http://127.0.0.1:8000/api/delete-category/${deleteId}`);
+
+                        if (deleteResponse.status === 204) {
+                            alert('Xóa thành công!');
+                            this.getCategoriesByPage(this.currentPage); // Refresh the category list
+                        } else {
+                            alert('Lỗi khi xóa danh mục!');
+                        }
+                    }
+                } else if (response.status === 201) {
+                    // Category has child categories or products
+                    alert('Danh mục này tồn tại các danh mục con và các sản phẩm thuộc nó. Bạn phải chuyển sang một danh mục khác trước khi xóa!');
+
+                    // Redirect to the category-assets page
+                    const encryptResponse = await axios.get(`http://127.0.0.1:8000/api/encrypt/${id}`);
+                    this.idEncode = encryptResponse.data.encrypted_id;
+                    this.$router.push({
+                        name: 'category-assets',
+                        params: { idEncode: this.idEncode }
+                    });
+                } else {
+                    alert('Không thể kiểm tra tài sản danh mục. Vui lòng thử lại sau.');
+                }
+            } catch (error) {
+                console.error("There was an error checking category assets:", error.response);
+                alert("Đã xảy ra lỗi khi kiểm tra tài sản danh mục!");
+            }
+        }
+
     },
     created() {
         this.getCategoriesByPage(this.currentPage);
