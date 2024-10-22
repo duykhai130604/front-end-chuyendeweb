@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '../../../utils/config';
 import axios from "axios"
 export default {
     data() {
@@ -56,7 +57,7 @@ export default {
         },
         async getCategoriesByPage() {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/categories');
+                const response = await axios.get(API_BASE_URL+'/categories');
                 this.categories = response.data.data;
                 this.parentCategories = this.categories.filter(category => category.parent_id === 0)
             } catch (error) {
@@ -67,7 +68,7 @@ export default {
             try {
                 const regex = /^(?!\s)(?!.*\s{2,})[a-zA-ZÀ-ỹà-ỹ0-9\s_-]{1,255}$/;
                 if (regex.test(this.categoryName)) {
-                    const response = await axios.post('http://127.0.0.1:8000/api/add-category', {
+                    const response = await axios.post(API_BASE_URL+'/add-category', {
                         name: this.categoryName,
                         parent_id: this.parentCategory,
                         status: 1

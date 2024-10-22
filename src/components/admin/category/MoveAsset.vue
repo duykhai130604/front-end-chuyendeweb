@@ -74,6 +74,7 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '../../../utils/config';
 import axios from 'axios';
 export default {
     data() {
@@ -100,7 +101,7 @@ export default {
     methods: {
         async fetchCategory() {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/category/${this.idEncode}`);
+                const response = await axios.get(API_BASE_URL+`/category/${this.idEncode}`);
                 this.category = response.data;
                 this.getCategoryChilds();
                 this.getProducts();
@@ -110,7 +111,7 @@ export default {
         },
         async getCategories() {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/getAllCategories');
+                const response = await axios.get(API_BASE_URL+'/getAllCategories');
                 this.categories = response.data;
                 this.categories = this.categories.filter(category => category.id !== this.category.id);
             } catch (error) {
@@ -128,7 +129,7 @@ export default {
         },
         async getCategoryChilds() {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/category-childs/${this.idEncode}`);
+                const response = await axios.get(API_BASE_URL+`/category-childs/${this.idEncode}`);
                 this.cateChilds = response.data;
             } catch (error) {
                 console.error("There was an error fetching products:", error);
@@ -136,7 +137,7 @@ export default {
         },
         async getProducts() {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/products-category/${this.idEncode}`);
+                const response = await axios.get(API_BASE_URL+`/products-category/${this.idEncode}`);
                 this.products = response.data;
                 console.log(response.data);
             } catch (error) {
@@ -157,7 +158,7 @@ export default {
             try {
                 const productIds = this.products.map(product => product.id);
                 const categoryIds = this.cateChilds.map(category => category.id);
-                const response = await axios.post('http://127.0.0.1:8000/api/update-product-category-and-parent', {
+                const response = await axios.post(API_BASE_URL+'/update-product-category-and-parent', {
                     product_ids: productIds,
                     old_category_id: this.category.id,
                     new_category_id: this.newCategory,
