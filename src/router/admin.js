@@ -40,8 +40,7 @@ const admin = [
         path: "/admin/move-category-assets/:idEncode",
         component: () => import("../views/admin/category/DeleteCategoryView.vue"),
         name:"category-assets"
-    }
-    }  ,  
+    },
     //blog
     {
         path: "/admin/blogs",
