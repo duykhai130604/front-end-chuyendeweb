@@ -47,7 +47,7 @@
                                                                     icon="fa fa-edit" />
                                                             </router-link>
                                                             <ButtonComponent btnClass="btn-link btn-danger"
-                                                                icon="fa fa-times" />
+                                                                icon="fa fa-times" @click="confirmDelete(product.id)" />
                                                             <ButtonComponent btnClass="btn-link btn-info"
                                                                 icon="fa fa-list" />
                                                         </div>
@@ -97,7 +97,8 @@ export default {
             totalPages: 0,
             message: "Loading...",
             keyword: '',
-            searchTimeout: null
+            searchTimeout: null,
+            isDeleting: false,
         };
     },
     mounted() {
@@ -147,6 +148,45 @@ export default {
                 style: 'currency',
                 currency: 'VND'
             });
+        },
+        confirmDelete(id) {
+            if (this.isDeleting) return;
+            this.isDeleting = true;
+
+            if (confirm('Are you sure you want to delete this product?')) {
+                this.deleteProduct(id);
+            } else {
+                this.isDeleting = false;
+            }
+        },
+        deleteProduct(id) {
+            const data = JSON.stringify({ id: id });
+            const config = {
+                method: 'delete',
+                maxBodyLength: Infinity,
+                url: `${API_BASE_URL}/admin/deleteProduct`,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                data: data
+            };
+
+            axios.request(config)
+                .then((response) => {
+                    alert(response.data.message);
+                    this.fetchProducts(this.currentPage, this.keyword);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    if (error.response && error.response.data) {
+                        alert(error.response.data.message);
+                    } else {
+                        alert('An unexpected error occurred.');
+                    }
+                })
+                .finally(() => {
+                    this.isDeleting = false;
+                });
         }
     }
 };
