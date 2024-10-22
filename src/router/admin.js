@@ -35,6 +35,12 @@ const admin = [
         path: "/admin/add-category",
         component: () => import("../views/admin/category/AddCategoryView.vue"),
         name:"add-category"
+    },
+    {
+        path: "/admin/move-category-assets/:idEncode",
+        component: () => import("../views/admin/category/DeleteCategoryView.vue"),
+        name:"category-assets"
+    }
     }  ,  
     //blog
     {
