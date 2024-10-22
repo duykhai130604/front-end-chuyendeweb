@@ -7,8 +7,10 @@ import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 // Tạo ứng dụng Vue
 const app = createApp(App);
-
-// Cài đặt Axios cho toàn bộ ứng dụng
+app.config.warnHandler = function () {
+    // Tắt cảnh báo
+    return null;
+};
 app.config.globalProperties.$axios = axios;
 
 // Sử dụng router

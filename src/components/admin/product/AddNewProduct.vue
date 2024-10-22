@@ -8,49 +8,27 @@
             </div>
             <div class="container">
                 <div class="page-inner">
-                    <div class="page-header">
-                        <h3 class="fw-bold mb-3">Add New Product</h3>
-                        <ul class="breadcrumbs mb-3">
-                            <li class="nav-home">
-                                <a href="#">
-                                    <i class="icon-home"></i>
-                                </a>
-                            </li>
-                            <li class="separator">
-                                <i class="icon-arrow-right"></i>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#">Product List</a>
-                            </li>
-                            <li class="separator">
-                                <i class="icon-arrow-right"></i>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#">Add New Product</a>
-                            </li>
-                        </ul>
-                    </div>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-12 pt-3">
+                                        <div class="col-12">
                                             <InputComponent id="productName" label="Product Name"
                                                 v-model="productData.name" placeholder="Enter name"
                                                 :errorMessage="errors.name" />
                                         </div>
-                                        <div class="col-6 pt-3">
+                                        <div class="col-6">
                                             <InputComponent id="productPrice" label="Price" v-model="productData.price"
                                                 placeholder="Price" :errorMessage="errors.price" />
                                         </div>
-                                        <div class="col-6 pt-3">
+                                        <div class="col-6">
                                             <InputComponent id="discount" label="Discount"
                                                 v-model="productData.discount" placeholder="Discount"
                                                 :errorMessage="errors.discount" />
                                         </div>
                                         <div class="col-12 pt-3">
-                                            <label class="pt-3" for="categorySelect">Category</label>
+                                            <LabelComponent text="Category" htmlFor="categorySelect" />
                                             <select class="form-select form-control-lg" id="categorySelect"
                                                 v-model="productData.category_id">
                                                 <option v-for="category in categories" :key="category.id"
@@ -60,10 +38,9 @@
                                             </select>
                                             <ErrorMessage :errorMessage="errors.category_id" />
                                         </div>
-                                        <div class="col-23">
-
-                                            <label class="pt-3" for="description">Description</label>
-                                            <CKEditorComponent v-model="productData.desc" />
+                                        <div class="col-12">
+                                            <LabelComponent text="Description" htmlFor="description" />
+                                            <CKEditorComponent id="description" v-model="productData.desc" />
                                             <ErrorMessage :errorMessage="errors.desc" />
                                         </div>
                                     </div>
@@ -96,6 +73,7 @@ import LoadingOverlay from '../../common/LoadingOverlayComponent.vue';
 import ErrorMessage from '../../common/ErrorMessageComponent.vue';
 import InputComponent from '../../common/InputComponent.vue';
 import ButtonComponent from '../../common/ButtonComponent.vue'; 
+import LabelComponent from '../../common/LabelComponent.vue'; 
 
 export default {
     name: 'AddProduct',
@@ -109,6 +87,7 @@ export default {
         ErrorMessage,
         InputComponent,
         ButtonComponent,
+        LabelComponent,
     },
     data() {
         return {
@@ -135,26 +114,26 @@ export default {
             });
     },
     methods: {
-    submitProduct() {
-        if (this.isLoading) return;
-        this.isLoading = true;
-        this.loadingPercentage = 0;
-        const productData = {
-            name: this.productData.name,
-            price: Number(this.productData.price),
-            discount: Number(this.productData.discount) || 0,
-            category_id: Number(this.productData.category_id),
-            desc: this.productData.desc
-        };
+        submitProduct() {
+            if (this.isLoading) return;
+            this.isLoading = true;
+            this.loadingPercentage = 0;
+            const productData = {
+                name: this.productData.name,
+                price: Number(this.productData.price),
+                discount: Number(this.productData.discount) || 0,
+                category_id: Number(this.productData.category_id),
+                desc: this.productData.desc
+            };
 
-        axios.post(`${API_BASE_URL}/admin/addProduct`, productData, {
-            onUploadProgress: progressEvent => {
-                this.loadingPercentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            }
-        })
+            axios.post(`${API_BASE_URL}/admin/addProduct`, productData, {
+                onUploadProgress: progressEvent => {
+                    this.loadingPercentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                }
+            })
             .then(response => {
                 this.isLoading = false;
-                alert(response.data.message)
+                alert(response.data.message);
                 this.$router.push('/admin/products');
             })
             .catch(error => {
@@ -165,9 +144,8 @@ export default {
                     alert('System error, please try again later');
                 }
             });
+        }
     }
-}
-
 }
 </script>
 

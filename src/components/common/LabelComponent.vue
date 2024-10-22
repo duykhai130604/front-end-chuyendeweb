@@ -1,5 +1,5 @@
 <template>
-    <label :for="htmlFor" class="form-label">
+    <label :for="htmlFor" class="form-label pt-3">
       {{ text }}
     </label>
   </template>
@@ -10,11 +10,13 @@
     props: {
       text: {
         type: String,
-        required: true,
+        required: false,
+        default: '',
       },
       htmlFor: {
         type: String,
-        required: true,
+        required: false,
+        default: '',
       },
     },
   };
