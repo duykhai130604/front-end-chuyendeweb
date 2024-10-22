@@ -72,6 +72,7 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '../../../utils/config';
 import axios from 'axios';
 export default {
     data() {
@@ -86,7 +87,7 @@ export default {
     methods: {
         async getCategoriesByPage(page) {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/categories?page=${page}`);
+                const response = await axios.get(`${API_BASE_URL}/categories?page=${page}`);
                 this.categories = response.data.data;
                 this.totalPages = response.data.last_page;
                 this.currentPage = response.data.current_page;
@@ -100,7 +101,7 @@ export default {
         async fetchParentCategories() {
             try {
                 const parentIds = this.categories.map(category => category.parent_id).filter(id => id !== null);
-                const response = await axios.get(`http://127.0.0.1:8000/api/categories/parent?ids=${parentIds.join(',')}`);
+                const response = await axios.get(`${API_BASE_URL}/categories/parent?ids=${parentIds.join(',')}`);
                 response.data.forEach(parent => {
                     this.parentCategories[parent.id] = parent.name;
                 });
@@ -123,7 +124,7 @@ export default {
         },
         async getEncrypt(id) {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/encrypt/${id}`);
+                const response = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
                 this.idEncode = response.data.encrypted_id;
                 this.$router.push({
                     name: 'edit-category',
@@ -142,16 +143,16 @@ export default {
         },
         async checkCategoryAsset(id) {
             try {
-                const response = await axios.post('http://127.0.0.1:8000/api/category/check-assets', {
+                const response = await axios.post(`${API_BASE_URL}/category/check-assets`, {
                     id: id,
                 });
 
                 if (response.status === 200) {
                     // Category can be deleted
                     if (confirm('Bạn có chắc muốn xóa?')) {
-                        const encryptResponse = await axios.get(`http://127.0.0.1:8000/api/encrypt/${id}`);
+                        const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
                         const deleteId = encryptResponse.data.encrypted_id;
-                        const deleteResponse = await axios.delete(`http://127.0.0.1:8000/api/delete-category/${deleteId}`);
+                        const deleteResponse = await axios.delete(`${API_BASE_URL}/delete-category/${deleteId}`);
 
                         if (deleteResponse.status === 204) {
                             alert('Xóa thành công!');
@@ -165,7 +166,7 @@ export default {
                     alert('Danh mục này tồn tại các danh mục con và các sản phẩm thuộc nó. Bạn phải chuyển sang một danh mục khác trước khi xóa!');
 
                     // Redirect to the category-assets page
-                    const encryptResponse = await axios.get(`http://127.0.0.1:8000/api/encrypt/${id}`);
+                    const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
                     this.idEncode = encryptResponse.data.encrypted_id;
                     this.$router.push({
                         name: 'category-assets',

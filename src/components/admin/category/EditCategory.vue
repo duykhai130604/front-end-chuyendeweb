@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '../../../utils/config';
 import axios from 'axios';
 export default {
     data() {
@@ -55,7 +56,7 @@ export default {
     methods: {
         async fetchCategory() {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/category/${this.idEncode}`);
+                const response = await axios.get(API_BASE_URL+`/category/${this.idEncode}`);
                 this.category = response.data;
 
             } catch (error) {
@@ -64,7 +65,7 @@ export default {
         },
         async getCategories() {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/getAllCategories');
+                const response = await axios.get(API_BASE_URL+'/getAllCategories');
                 this.categories = response.data;
                 this.parentCategories = this.categories.filter(category => {
                     return category.parent_id === 0 && (this.category && category.id != this.category.id);
@@ -92,7 +93,7 @@ export default {
                     name: this.category.name,
                     status: 1
                 };
-                const response = await axios.post('http://127.0.0.1:8000/api/update-category', payload);
+                const response = await axios.post(API_BASE_URL+'/update-category', payload);
                 if (response.data == 0) {
                     alert("Danh mục bị trùng!!!")
                 } if (response.data == 1) {
