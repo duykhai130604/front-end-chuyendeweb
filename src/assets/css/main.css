@@ -2669,11 +2669,15 @@ input.num-product::-webkit-inner-spin-button {
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  background-image: url('../images/bg-02.jpg');
+  margin-top: 100px;
 }
+@media (max-width: 768px) {
+ .bg-img1{
+  margin-top:0;
+ } 
 
-
-
-
+}
 /*==================================================================
        BORDER BORDER  BORDER  BORDER  BORDER  BORDER  BORDER  BORDER
 ==================================================================*/
