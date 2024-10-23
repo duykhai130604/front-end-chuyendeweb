@@ -26,6 +26,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <tr v-if="categories.length === 0">
+                                                <td colspan="5" class="text-center">{{ message }}</td>
+                                            </tr>
                                             <tr v-for="(category, index) in categories" :key="category.id">
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ category.name }}</td>
@@ -82,6 +85,7 @@ export default {
             idEncode: 0,
             currentPage: 1,
             totalPages: 0,
+            message: "Không tồn tại một dữ liệu nào",
         };
     },
     methods: {

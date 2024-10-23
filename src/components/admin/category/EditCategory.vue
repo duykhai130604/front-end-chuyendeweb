@@ -14,10 +14,10 @@
             <!-- Danh mục cha -->
             <div class="mb-3">
                 <label for="parentCategory" class="form-label">Danh mục cha</label>
-                <select class="form-select" id="parentCategory" v-model="parentCategory">
+                <select class="form-select" id="parentCategory" v-model="category.parent_id">
                     <option value="0">Chọn danh mục cha</option>
                     <option v-for="parent in parentCategories" :key="parent.id" :value="parent.id"
-                        :selected="parent.id === parentCategory">
+                        :selected="parent.id === category.parent_id">
                         {{ parent.name }}
                     </option>
                 </select>
@@ -26,7 +26,7 @@
             <div class="d-flex justify-content-end">
                 <button type="button" class="btn btn-danger me-2" @click="cancel">Hủy</button>
                 <button type="submit" class="btn btn-primary"
-                    :disabled="errorMessage != '' || category.name == '' || parentCategory == null">Lưu</button>
+                    :disabled="errorMessage != '' || category.name == '' || category.parent_id == null">Lưu</button>
             </div>
         </form>
     </div>
@@ -45,7 +45,6 @@ export default {
             categories: [],
             parentCategories: [],
             errorMessage: '',
-            parentCategory: null
         };
     },
     computed: {
@@ -89,7 +88,7 @@ export default {
             try {
                 const payload = {
                     id: this.idEncode,
-                    parent_id: this.parentCategory,
+                    parent_id: this.category.parent_id,
                     name: this.category.name,
                     status: 1
                 };

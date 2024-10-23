@@ -169,7 +169,7 @@ export default {
                 this.$router.push({ name: 'list-categories' });
             } catch (error) {
                 console.error(error.response.data);
-                alert("Error updating categories: " + error.response.data.message);
+                alert("Hãy chọn danh mục mới");
             }
         }
     },
