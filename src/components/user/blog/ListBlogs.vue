@@ -92,39 +92,21 @@
                             </div>
 
                             <div class="p-t-55">
-                                <h4 class="mtext-112 cl2 p-b-33">
-                                    Categories
+                                <h4 class="authors p-b-33">
+                                    Các tác giả nổi bật
                                 </h4>
-
                                 <ul>
-                                    <li class="bor18">
-                                        <a href="#" class="dis-block stext-115 cl6 hov-cl1 trans-04 p-tb-8 p-lr-4">
-                                            Fashion
-                                        </a>
-                                    </li>
-
-                                    <li class="bor18">
-                                        <a href="#" class="dis-block stext-115 cl6 hov-cl1 trans-04 p-tb-8 p-lr-4">
-                                            Beauty
-                                        </a>
-                                    </li>
-
-                                    <li class="bor18">
-                                        <a href="#" class="dis-block stext-115 cl6 hov-cl1 trans-04 p-tb-8 p-lr-4">
-                                            Street Style
-                                        </a>
-                                    </li>
-
-                                    <li class="bor18">
-                                        <a href="#" class="dis-block stext-115 cl6 hov-cl1 trans-04 p-tb-8 p-lr-4">
-                                            Life Style
-                                        </a>
-                                    </li>
-
-                                    <li class="bor18">
-                                        <a href="#" class="dis-block stext-115 cl6 hov-cl1 trans-04 p-tb-8 p-lr-4">
-                                            DIY & Crafts
-                                        </a>
+                                    <div @click="fetchBlogs()"
+                                           :active="txt-color" :class="{'text-color': selectedAuthorId === null, 'dis-block': true}">
+                                          <h3> Tất cả</h3>
+                                           
+                                        </div>
+                                    <li class="bor18" v-for="author in authors" :key="author.id">
+                                        <div @click="getBlogsByAuthor(author.id)"
+                                           :active="txt-color" :class="{'text-color': selectedAuthorId === author.id, 'dis-block': true, 'stext-115': true, 'cl6': true, 'hov-cl1': true, 'trans-04': true, 'p-tb-8': true, 'p-lr-4': true}">
+                                           >
+                                            {{ author.name }} ({{ author.blog_count }})
+                                        </div>
                                     </li>
                                 </ul>
                             </div>
@@ -336,7 +318,9 @@ export default {
         return {
             blogs: [],
             currentPage: 1,
-            totalPages: 0
+            totalPages: 0,
+            authors: [],
+            selectedAuthorId: null,
 
         };
     },
@@ -348,10 +332,22 @@ export default {
     methods: {
         async fetchBlogs(page = 1) {
             try {
+                this.selectedAuthorId=null;
                 const response = await axios.get(API_BASE_URL + '/user-blogs?page=' + page);
                 this.blogs = response.data.data;
                 this.totalPages = response.data.last_page;
                 this.currentPage = response.data.current_page;
+            } catch (error) {
+                console.error('Lỗi khi lấy blogs:', error);
+            }
+        },
+        async fetchAuthors() {
+            try {
+                const response = await axios.get(API_BASE_URL + '/authors-count-blog');
+
+                this.authors = response.data;
+                console.log(response.data);
+
             } catch (error) {
                 console.error('Lỗi khi lấy blogs:', error);
             }
@@ -380,9 +376,24 @@ export default {
             const seconds = String(d.getSeconds()).padStart(2, '0');
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         },
+        async getBlogsByAuthor(id) {
+            try {
+                this.selectedAuthorId = id;
+                const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
+                const idCrypt = encryptResponse.data.encrypted_id;
+                const response = await axios.get(API_BASE_URL + '/get-blog-by-author/'+idCrypt);
+                this.blogs = response.data.data
+                this.totalPages = response.data.last_page;
+                this.currentPage = response.data.current_page;                
+            } catch (error) {
+                console.error('Lỗi khi lấy blogs:', error);
+            }
+        }
+
     },
     mounted() {
         this.fetchBlogs();
+        this.fetchAuthors();
     },
 };
 </script>
@@ -401,5 +412,13 @@ export default {
     position: absolute;
     left: 0;
     bottom: 0;
+}
+
+.authors {
+    color: black;
+    font-weight: bold;
+}
+.text-color{
+    color: aqua;
 }
 </style>
