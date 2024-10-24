@@ -160,7 +160,7 @@ export default {
 
                         if (deleteResponse.status === 204) {
                             alert('Xóa thành công!');
-                            this.getCategoriesByPage(this.currentPage); // Refresh the category list
+                            this.getCategoriesByPage(this.currentPage);
                         } else {
                             alert('Lỗi khi xóa danh mục!');
                         }
