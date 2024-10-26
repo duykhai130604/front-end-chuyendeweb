@@ -17,5 +17,10 @@ const home = [
         path: "/register",
         component: () => import("../views/user/RegisterView.vue"),
     },
+    {
+        path: "/reset",
+        component: () => import("../views/user/ResetView.vue"),
+    },
+  
 ];
 export default home;
