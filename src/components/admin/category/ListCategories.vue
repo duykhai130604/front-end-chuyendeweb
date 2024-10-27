@@ -92,7 +92,7 @@ export default {
         async getCategoriesByPage(page) {
             try {
                 const response = await axios.get(`${API_BASE_URL}/categories?page=${page}`);
-                this.categories = response.data.data;
+                this.categories = response.data.data.filter(category => category.status === 1);                
                 this.totalPages = response.data.last_page;
                 this.currentPage = response.data.current_page;
 
@@ -158,9 +158,9 @@ export default {
                         const deleteId = encryptResponse.data.encrypted_id;
                         const deleteResponse = await axios.delete(`${API_BASE_URL}/delete-category/${deleteId}`);
 
-                        if (deleteResponse.status === 204) {
+                        if (deleteResponse) {
                             alert('Xóa thành công!');
-                            this.getCategoriesByPage(this.currentPage); // Refresh the category list
+                            this.getCategoriesByPage(this.currentPage);
                         } else {
                             alert('Lỗi khi xóa danh mục!');
                         }

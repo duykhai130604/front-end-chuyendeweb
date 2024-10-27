@@ -1,7 +1,7 @@
 const home = [
     {
         path: "/",
-        name: "Home",
+        name: "home",
         component: () => import("../views/user/HomeView.vue"),
     },
     {
@@ -21,6 +21,11 @@ const home = [
         path: "/reset",
         component: () => import("../views/user/ResetView.vue"),
     },
+  {
   
+        path: "/blogs",
+        component: () => import("../views/user/blog/ListBlogsView.vue"),
+        name:"blogs"
+    },
 ];
 export default home;
