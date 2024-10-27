@@ -68,7 +68,7 @@ export default {
         async getBlogs() {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/blogs');
-                this.blogs = response.data;               
+                this.blogs = response.data.filter(blog => blog.status !== -1);
             } catch (error) {
                 console.error("Có lỗi xảy ra khi lấy danh sách blog:", error);
             }

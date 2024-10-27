@@ -101,7 +101,7 @@ export default {
     methods: {
         async fetchCategory() {
             try {
-                const response = await axios.get(API_BASE_URL+`/category/${this.idEncode}`);
+                const response = await axios.get(API_BASE_URL + `/category/${this.idEncode}`);
                 this.category = response.data;
                 this.getCategoryChilds();
                 this.getProducts();
@@ -111,7 +111,7 @@ export default {
         },
         async getCategories() {
             try {
-                const response = await axios.get(API_BASE_URL+'/getAllCategories');
+                const response = await axios.get(API_BASE_URL + '/getAllCategories');
                 this.categories = response.data;
                 this.categories = this.categories.filter(category => category.id !== this.category.id);
             } catch (error) {
@@ -129,7 +129,7 @@ export default {
         },
         async getCategoryChilds() {
             try {
-                const response = await axios.get(API_BASE_URL+`/category-childs/${this.idEncode}`);
+                const response = await axios.get(API_BASE_URL + `/category-childs/${this.idEncode}`);
                 this.cateChilds = response.data;
             } catch (error) {
                 console.error("There was an error fetching products:", error);
@@ -137,7 +137,7 @@ export default {
         },
         async getProducts() {
             try {
-                const response = await axios.get(API_BASE_URL+`/products-category/${this.idEncode}`);
+                const response = await axios.get(API_BASE_URL + `/products-category/${this.idEncode}`);
                 this.products = response.data;
                 console.log(response.data);
             } catch (error) {
@@ -156,19 +156,18 @@ export default {
         },
         async updateProductCategoryAndParent() {
             try {
-                const productIds = this.products.map(product => product.id);
-                const categoryIds = this.cateChilds.map(category => category.id);
-                const response = await axios.post(API_BASE_URL+'/update-product-category-and-parent', {
+
+                const productIds = this.products.length > 0 ? this.products.map(product => product.id) : [];
+                const categoryIds = this.cateChilds.length > 0 ? this.cateChilds.map(category => category.id) : [];
+               await axios.post(API_BASE_URL + '/update-product-category-and-parent', {
                     product_ids: productIds,
                     old_category_id: this.category.id,
                     new_category_id: this.newCategory,
                     category_ids: categoryIds
                 });
-                console.log(response.data);
                 alert("Product categories and parent updated successfully!");
                 this.$router.push({ name: 'list-categories' });
             } catch (error) {
-                console.error(error.response.data);
                 alert("Hãy chọn danh mục mới");
             }
         }
