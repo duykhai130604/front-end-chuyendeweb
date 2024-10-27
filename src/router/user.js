@@ -18,6 +18,11 @@ const home = [
         component: () => import("../views/user/RegisterView.vue"),
     },
     {
+        path: "/reset",
+        component: () => import("../views/user/ResetView.vue"),
+    },
+  {
+  
         path: "/blogs",
         component: () => import("../views/user/blog/ListBlogsView.vue"),
         name:"blogs"
