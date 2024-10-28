@@ -820,13 +820,15 @@ export default {
   data() {
     return {
       topProducts: [],
+      user:null,
     };
   },
   methods: {
     async fetchTopProducts() {
       try {
         const response = await axios.get(API_BASE_URL+'/top-products'); 
-        this.topProducts = response.data;         
+        this.topProducts = response.data;  
+               
       } catch (error) {
         console.error('Error fetching top products:', error);
       }
@@ -834,6 +836,7 @@ export default {
   },
   created() {
     this.fetchTopProducts();
+    this.user = localStorage.getItem('token');
   },
 };
 </script>

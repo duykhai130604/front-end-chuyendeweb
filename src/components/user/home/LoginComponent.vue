@@ -22,7 +22,7 @@
             </form>
             <div class="text-center mt-3">
                 <a href="#" class="text-decoration-none">Bạn quên <span class="text-primary">mật khẩu?</span></a><br>
-                <a href="#" class="text-decoration-none">Bạn chưa có <span class="text-primary">tài khoản?</span></a>
+                <router-link to="/register"><span class="text-primary">Bạn chưa có  tài khoản?</span></router-link>
             </div>
         </div>
     </div>
@@ -80,10 +80,10 @@ export default {
 
                 // Kiểm tra token và thông báo lỗi nếu có
                 if (data.token) {
-                    localStorage.setItem('token', data.token); // Lưu token vào localStorage
-                    this.$router.push('/'); // Chuyển hướng sau khi đăng nhập thành công
+                    localStorage.setItem('token', data.token); 
+                    this.$router.push('/'); 
                 } else {
-                    // Nếu có lỗi, cập nhật các thông báo lỗi tương ứng
+
                     this.emailError = data.error.email || '';
                     this.passwordError = data.error.password || 'Incorrect password';
                 }
