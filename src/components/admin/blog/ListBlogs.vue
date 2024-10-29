@@ -36,8 +36,10 @@
                                                 <td>{{ formatDate(blog.created_at) }}</td>
                                                 <td>{{ formatDate(blog.updated_at) }}</td>
                                                 <td>
-                                                    <a @click="getEncrypt(blog.id)" class="btn btn-primary btn-sm">Sửa</a>
-                                                    <a @click.prevent="deleteBlog(blog.id)" class="btn btn-danger btn-sm">Xóa</a>
+                                                    <a @click="getEncrypt(blog.id)"
+                                                        class="btn btn-primary btn-sm">Sửa</a>
+                                                    <a @click.prevent="deleteBlog(blog.id)"
+                                                        class="btn btn-danger btn-sm">Xóa</a>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -47,6 +49,27 @@
                         </div>
                     </div>
                 </div>
+                <!-- Phần phân trang -->
+                <nav aria-label="pagination">
+                    <ul class="pagination">
+                        <li v-if="currentPage > 1">
+                            <a href="" @click.prevent="changePage(currentPage - 1)" aria-hidden="true">
+                                « <span class="visuallyhidden">Previous set of pages</span>
+                            </a>
+                        </li>
+                        <li v-for="page in totalPages" :key="page">
+                            <a href="" @click.prevent="changePage(page)" :class="{ 'active': currentPage === page }"
+                                :aria-current="currentPage === page ? 'page' : undefined">
+                                <span class="visuallyhidden">Page </span>{{ page }}
+                            </a>
+                        </li>
+                        <li v-if="currentPage < totalPages">
+                            <a href="" @click.prevent="changePage(currentPage + 1)" aria-hidden="true">
+                                <span class="visuallyhidden">Next set of pages</span> »
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>
@@ -61,10 +84,22 @@ export default {
             blogs: [],
             idEncode: 0,
             users: {},
+            currentPage: 1,
+            totalPages: 0,
             message: "Không tồn tại một dữ liệu nào",
         };
     },
     methods: {
+        async getBlogsbypage(page = 1) {
+            try {
+                const response = await axios.get(`http://127.0.0.1:8000/api/blogs?page=${page}&perPage=${this.perPage}`);
+                this.blogs = response.data.data;
+                this.totalPages = response.data.last_page; // Cập nhật số trang từ API
+                this.currentPage = response.data.current_page; // Cập nhật trang hiện tại
+            } catch (error) {
+                console.error("Có lỗi xảy ra khi lấy danh sách blog:", error);
+            }
+        },
         async getBlogs() {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/blogs');
@@ -81,7 +116,7 @@ export default {
             const hours = String(d.getHours()).padStart(2, '0');
             const minutes = String(d.getMinutes()).padStart(2, '0');
             const seconds = String(d.getSeconds()).padStart(2, '0');
-            
+
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         },
         async getEncrypt(id) {
@@ -103,14 +138,14 @@ export default {
                 try {
                     await axios.delete(`http://127.0.0.1:8000/api/delete-blog/${idEncode}`);
                     alert("Xóa blog thành công!");
-                    this.getBlogs(); 
+                    this.getBlogs();
                 } catch (error) {
                     console.error("Có lỗi xảy ra khi xóa blog:", error);
                 }
             }
         },
-        async getNameAuthor(){
-            const ids = this.blogs.map(blog => blog.user_id).filter(user_id => user_id  !== null);
+        async getNameAuthor() {
+            const ids = this.blogs.map(blog => blog.user_id).filter(user_id => user_id !== null);
             if (ids.length) {
                 const response = await axios.get(`http://127.0.0.1:8000/api/get-authorname?ids=${ids.join(',')}`);
                 response.data.forEach(element => {
@@ -125,6 +160,10 @@ export default {
             this.$router.push({ name: 'add-blog' });
         },
     },
+    changePage(page) {
+            if (page < 1 || page > this.totalPages) return;
+            this.getBlogsbypage(page);
+        },
     async created() {
         await this.getBlogs(); // Đợi lấy danh sách blog trước
         await this.getNameAuthor(); // Sau đó gọi hàm lấy tên tác giả
