@@ -12,7 +12,7 @@
           <div class="right-top-bar flex-w h-full">
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">Log out</a>
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-else>Log in</a>
-            <a href="#" class="flex-c-m trans-04 p-lr-25" v-if="userAuth">{{ userAuth.user_name }} </a>
+            <a href="#" class="flex-c-m trans-04 p-lr-25" v-if="userAuth">{{ userAuth.name }} </a>
 
             <a href="#" class="flex-c-m trans-04 p-lr-25"> EN </a>
 
@@ -127,7 +127,7 @@
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">Log out</a>
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-else>Log in</a>
 
-            <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">{{ userAuth.user_name }} </a>
+            <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">{{ userAuth.name }} </a>
 
             <a href="#" class="flex-c-m p-lr-10 trans-04"> EN </a>
 
@@ -200,19 +200,22 @@ export default {
   },
   methods: {
     async fetchUser() {
-      const re = await axios.get(API_BASE_URL + '/get-user', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.user}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      this.userAuth = re.data;
+      try {
+    const re = await axios.get(API_BASE_URL + '/me', {
+      withCredentials: true, 
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    this.userAuth = re.data;
+    
+  } catch (error) {
+    console.log(error);
+  }
       
     }
   },
   created() {
-    this.user = localStorage.getItem('token')
 this.fetchUser();
   }
 }

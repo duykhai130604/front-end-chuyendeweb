@@ -3,7 +3,8 @@
         <div class="card p-4 shadow-lg" style="width: 350px; border-radius: 10px;">
             <h4 class="text-center mb-4">Login</h4>
             <div class="text-center mb-4">
-                <img src="../../../assets/images/user.jpg" class="rounded-circle" alt="Shop Image" width="120" height="120">
+                <img src="../../../assets/images/user.jpg" class="rounded-circle" alt="Shop Image" width="120"
+                    height="120">
             </div>
             <form @submit.prevent="login">
                 <div class="mb-3">
@@ -13,7 +14,8 @@
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input v-model="password" type="password" class="form-control" id="password" placeholder="Enter Password">
+                    <input v-model="password" type="password" class="form-control" id="password"
+                        placeholder="Enter Password">
                     <small v-if="passwordError" class="text-danger">{{ passwordError }}</small>
                 </div>
                 <div class="d-grid">
@@ -21,14 +23,17 @@
                 </div>
             </form>
             <div class="text-center mt-3">
-                <a href="#" class="text-decoration-none">Bạn quên <span class="text-primary">mật khẩu?</span></a><br>
-                <router-link to="/register"><span class="text-primary">Bạn chưa có  tài khoản?</span></router-link>
+                <a href="http://localhost:8080/reset" class="text-decoration-none">Bạn quên <span
+                        class="text-primary">mật khẩu?</span></a><br>
+                <a href="#" class="text-decoration-none">Bạn chưa có <span class="text-primary">tài khoản?</span></a>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+import { API_BASE_URL } from '@/utils/config';
 export default {
     data() {
         return {
@@ -39,6 +44,9 @@ export default {
         };
     },
     methods: {
+        reset() {
+            this.$router.push({ name: 'list-blogs' }); // Đường dẫn đến danh sách blog
+        },
         validateEmail(email) {
             const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/i;
             return re.test(email);
@@ -65,28 +73,27 @@ export default {
 
             // Nếu không có lỗi, thực hiện login
             try {
-                const response = await fetch('http://localhost:8000/api/login', {
-                    method: 'POST',
+                const response = await axios.post(API_BASE_URL + '/login', {
+                    email: this.email,
+                    password: this.password
+                }, {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        email: this.email,
-                        password: this.password
-                    })
+                    withCredentials: true 
                 });
 
-                const data = await response.json();
+                const data = response
+                console.log(data)
 
-                // Kiểm tra token và thông báo lỗi nếu có
-                if (data.token) {
-                    localStorage.setItem('token', data.token); 
-                    this.$router.push('/'); 
-                } else {
-
-                    this.emailError = data.error.email || '';
-                    this.passwordError = data.error.password || 'Incorrect password';
+                if (data) {
+                    this.$router.push('/');
                 }
+                else {
+                    console.log('that bai')
+                }
+                // Kiểm tra token và thông báo lỗi nếu có
+
             } catch (error) {
                 console.error('Error:', error);
                 this.emailError = 'An error occurred. Please try again later.';
