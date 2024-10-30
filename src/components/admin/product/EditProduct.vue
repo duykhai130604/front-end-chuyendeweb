@@ -33,15 +33,33 @@
                                                         v-model="productData.discount" placeholder="Discount" />
                                                     <ErrorMessage :errorMessage="errors.discount" />
                                                 </div>
-                                            </div>
-                                            <LabelComponent text="Categories" />
-                                            <div v-for="category in categories" :key="category.id">
-                                                <input v-model="productData.categories" name="categories[]"
-                                                    class="form-check-input" type="checkbox" :value="category.id"
-                                                    :id="'categoryCheck' + category.id" />
-                                                <label class="form-check-label" :for="'categoryCheck' + category.id">
-                                                    {{ category.name }}
-                                                </label>
+                                                <div class="col-12">
+                                                    <div class="form-check">
+                                                        <LabelComponent text="Categories" />
+                                                        <div v-for="category in categories" :key="category.id">
+                                                            <input v-model="productData.categories" name="categories[]"
+                                                                class="form-check-input" type="checkbox"
+                                                                :value="category.id"
+                                                                :id="'categoryCheck' + category.id" />
+                                                            <label class="form-check-label"
+                                                                :for="'categoryCheck' + category.id">
+                                                                {{ category.name }}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <LabelComponent text="Thumbnail Old" />
+                                                    <br>
+                                                    <img class="img-fluid image-old" alt="Thumbnail old" :src="thumbnailOld" />
+                                                </div>
+                                                <div class="col-6">
+                                                    <LabelComponent text="Thumbnail" />
+                                                    <br>
+                                                    <input type="file" class="form-control-file" id="image"
+                                                        @change="handleFileUpload" />
+                                                    <ErrorMessage :errorMessage="errors.image" />
+                                                </div>
                                             </div>
                                             <ErrorMessage :errorMessage="errors.categories" />
                                             <LabelComponent for="description" text="Description" />
@@ -80,9 +98,15 @@ import ErrorMessage from '../../common/ErrorMessageComponent.vue';
 import InputComponent from '../../common/InputComponent.vue';
 import ButtonComponent from '../../common/ButtonComponent.vue';
 import LabelComponent from '../../common/LabelComponent.vue';
-
+import { useToast } from "vue-toastification"
 export default {
     name: 'EditProduct',
+    setup() {
+        const toast = useToast();
+        return {
+            toast
+        };
+    },
     components: {
         SideBarComponent,
         NavbarComponent,
@@ -102,37 +126,35 @@ export default {
                 name: '',
                 price: '',
                 discount: 0,
-                categories: [], // Danh sách danh mục đã chọn
+                categories: [],
                 desc: ''
             },
-            categories: [], // Tất cả danh mục
+            categories: [],
             errors: {},
             message: '',
             isLoading: false,
-            loadingPercentage: 0
+            loadingPercentage: 0,
+            thumbnailOld: ''
         };
     },
     mounted() {
         const encodedId = this.$route.params.id;
-
-        // Lấy thông tin chi tiết sản phẩm
         axios.get(`${API_BASE_URL}/getProductDetails?encodedId=${encodedId}`)
             .then(response => {
                 const product = response.data.product;
+                this.thumbnailOld = product.thumbnail;
                 this.productData = {
                     id: encodedId,
                     name: product.name,
                     price: product.price,
                     discount: product.discount,
-                    categories: product.categories || [], // Gán danh sách danh mục từ sản phẩm
+                    categories: product.categories || [],
                     desc: product.desc
                 };
 
-                // Gọi API để lấy danh mục đã chọn
                 return axios.get(`${API_BASE_URL}/getCategoriesByProductId?encodeId=${encodedId}`);
             })
             .then(response => {
-                // Gán danh sách các danh mục đã chọn vào productData.categories
                 this.productData.categories = response.data.selectedCategories;
             })
             .catch(error => {
@@ -154,33 +176,48 @@ export default {
             });
     },
     methods: {
+        handleFileUpload(event) {
+            const file = event.target.files[0];
+            this.productData.image = file ? file : null;
+        },
         submitProduct() {
             if (this.isLoading) return;
             this.isLoading = true;
             this.loadingPercentage = 0;
 
-            const productData = {
-                id: this.productData.id,
-                name: this.productData.name,
-                price: Number(this.productData.price),
-                discount: Number(this.productData.discount) || 0,
-                categories: this.productData.categories,
-                desc: this.productData.desc
-            };
+            const formData = new FormData();
+            formData.append('id', this.productData.id);
+            formData.append('name', this.productData.name);
+            formData.append('price', Number(this.productData.price));
+            formData.append('discount', Number(this.productData.discount) || 0);
+            this.productData.categories.forEach(category => {
+                formData.append('categories[]', category);
+            });
+            formData.append('desc', this.productData.desc);
+            if (this.productData.image) {
+                formData.append('image', this.productData.image);
+            }
 
             const config = {
                 method: 'post',
                 url: `${API_BASE_URL}/admin/editProduct`,
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'multipart/form-data'
                 },
-                data: JSON.stringify(productData)
+                data: formData,
+                onUploadProgress: (progressEvent) => {
+                    this.loadingPercentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                }
             };
 
             axios.request(config)
                 .then(response => {
                     this.isLoading = false;
-                    alert(response.data.message);
+                    this.toast.success(response.data.message, {
+                        position: 'top-center',
+                        timeout: 1500,
+                        pauseOnHover: false,
+                    });
                     this.$router.push('/admin/products');
                 })
                 .catch(error => {
@@ -190,12 +227,16 @@ export default {
                     } else {
                         alert('System error, please try again later');
                     }
-            });
-        }
+                });
+        },
     }
+
 }
 </script>
-
 <style>
-@import url("../../../assets/admin/assets/font-awesome-4.7.0/css/font-awesome.css");
+.image-old {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+}
 </style>

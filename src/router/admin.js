@@ -14,12 +14,24 @@ const admin = [
     {
         path: '/admin/products/edit/:id',
         name: 'editProduct',
-        component: ()=> import("../views/admin/product/EditProductView.vue"),
+        component: () => import("../views/admin/product/EditProductView.vue"),
         props: true
     },
     {
-        path: "/admin/productVariants",
-        component: () => import("../views/admin/product/ProductVariantsView.vue"),
+        path: "/admin/productVariants/:id",
+        component: () => import("../views/admin/product_variant/ProductVariantsView.vue"),
+        name: 'productVariants',
+        props: true
+    },
+    {
+        path: "/admin/products/addNewVariants",
+        component: () => import("../views/admin/product_variant/AddNewVariant.vue")
+    },
+    {
+        path: "/admin/products/editVariant/:id",
+        name: "editVariant",
+        component: () => import("../views/admin/product_variant/EditVariant.vue"),
+        props: true,
     },
     {
         path: "/admin/categories",
@@ -34,6 +46,7 @@ const admin = [
     {
         path: "/admin/add-category",
         component: () => import("../views/admin/category/AddCategoryView.vue"),
+
         name:"add-category"
     },
     {
@@ -56,7 +69,7 @@ const admin = [
         path: "/admin/add-blog",
         component: () => import("../views/admin/blog/AddBlogView.vue"),
         name: "add-blog"
-    } 
+    }
 
 ];
 
