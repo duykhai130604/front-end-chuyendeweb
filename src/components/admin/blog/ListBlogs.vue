@@ -26,6 +26,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <tr v-if="blogs.length === 0">
+                                                <td colspan="5" class="text-center">{{ message }}</td>
+                                            </tr>
                                             <tr v-for="(blog, index) in blogs" :key="blog.id">
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ blog.title }}</td>
@@ -58,13 +61,14 @@ export default {
             blogs: [],
             idEncode: 0,
             users: {},
+            message: "Không tồn tại một dữ liệu nào",
         };
     },
     methods: {
         async getBlogs() {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/blogs');
-                this.blogs = response.data;               
+                this.blogs = response.data.filter(blog => blog.status !== -1);
             } catch (error) {
                 console.error("Có lỗi xảy ra khi lấy danh sách blog:", error);
             }
@@ -93,11 +97,13 @@ export default {
             }
         },
         async deleteBlog(id) {
+            const idEncrypt = await axios.get(`http://127.0.0.1:8000/api/encrypt/${id}`);
+            const idEncode = idEncrypt.data.encrypted_id;
             if (confirm("Bạn có chắc chắn muốn xóa blog này?")) {
                 try {
-                    await axios.delete(`http://127.0.0.1:8000/api/delete-blog/${id}`);
+                    await axios.delete(`http://127.0.0.1:8000/api/delete-blog/${idEncode}`);
                     alert("Xóa blog thành công!");
-                    this.getBlogs(); // Tải lại danh sách blog sau khi xóa
+                    this.getBlogs(); 
                 } catch (error) {
                     console.error("Có lỗi xảy ra khi xóa blog:", error);
                 }

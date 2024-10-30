@@ -1,11 +1,15 @@
 <template>
     <TheHeader />
-    <Cart/>
-    <Slider/>
-    <HomeBanner/>
-    <HomeAllProducts/>
+    <Cart />
+    <Slider />
+    <!-- Title page -->
+    <section class="bg-img1 txt-center p-lr-15 p-tb-92">
+        <h2 class="ltext-105 cl0 txt-center">
+            Blog
+        </h2>
+    </section>
+    <ListBlogs />
     <TheFooter />
-    <ProductModal/>
     <router-view></router-view>
 </template>
 <script>
@@ -46,13 +50,11 @@ import TheHeader from "@/components/user/TheHeader.vue";
 import TheFooter from "@/components/user/TheFooter.vue";
 import Cart from "@/components/user/home/HomeCart.vue";
 import Slider from "@/components/user/home/HomeSlider.vue";
-import HomeBanner from "@/components/user/home/HomeBanner.vue";
-import HomeAllProducts from "@/components/user/home/HomeAllProducts.vue";
-import ProductModal from "@/components/user/ProductModal.vue";
+import ListBlogs from "@/components/user/blog/ListBlogs.vue";
 
 export default {
     components: {
-        TheHeader, TheFooter,Cart, Slider, HomeBanner, HomeAllProducts,ProductModal
+        TheHeader, TheFooter, Cart, Slider, ListBlogs
     }
 }
 </script>

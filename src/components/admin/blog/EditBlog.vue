@@ -4,60 +4,29 @@
             <h3 class="fw-bold mb-3">Sửa Blog</h3>
         </div>
         <form @submit.prevent="updateBlog">
-            <!-- Tiêu đề Blog -->
+            <!-- Tiêu đề Blog -->           
             <div class="mb-3">
                 <label for="title" class="form-label">Tiêu đề Blog</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    id="title"
-                    v-model="blog.title"
-                    placeholder="Nhập tiêu đề blog"
-                    @input="validateTitle"
-                    required
-                />
-                <div v-if="errorTitle" class="text-danger">{{ errorTitle }}</div>
+                <input type="text" class="form-control" id="title" v-model="blog.title" placeholder="Nhập tiêu đề blog"
+                    @input="validateInput" />
+                <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
             </div>
-
-            <!-- Nội dung Blog -->
+            <!-- Nội dung -->
             <div class="mb-3">
                 <label for="content" class="form-label">Nội dung</label>
-                <textarea
-                    class="form-control"
-                    id="content"
-                    v-model="blog.content"
-                    rows="6"
-                    placeholder="Nhập nội dung blog"
-                    required
-                ></textarea>
+                <div style="height: auto;">
+                    <ckeditor rows="6" class="form-control" required id="content" placeholder="Nhập nội dung blog"
+                        :editor="editor" v-model="blog.content" @ready="onReady" />
+                </div>
             </div>
-
             <!-- Hình thu nhỏ -->
             <div class="mb-3">
-                <label for="thumbnail" class="form-label">Hình thu nhỏ</label>
-                <input
-                    type="file"
-                    class="form-control"
-                    id="thumbnail"
-                    @change="handleFileUpload"
-                    accept="image/*"
-                />
+                <label for="thumbnail" class="form-label">Hình ảnh</label>
+                <input type="file" class="form-control" id="thumbnail" @change="handleFileUpload" accept="image/*" />
+                <div v-if="blog.thumbnail">
+                    <img :src="blog.thumbnail" alt="Uploaded Image" class="img-thumbnail" style="max-width: 200px;" />
+                </div>
             </div>
-
-            <!-- Tác giả -->
-            <div class="mb-3">
-                <label for="user_id" class="form-label">Tác giả</label>
-                <input
-                    type="text"
-                    class="form-control"
-                    id="user_id"
-                    v-model="blog.user_id"
-                    placeholder="Nhập tên tác giả"
-                    required
-                />
-            </div>
-
-            <!-- Trạng thái -->
             <div class="mb-3">
                 <label for="status" class="form-label">Trạng thái</label>
                 <select class="form-select" id="status" v-model="blog.status" required>
@@ -65,11 +34,13 @@
                     <option :value="0">Nháp</option>
                 </select>
             </div>
-
             <!-- Buttons -->
             <div class="d-flex justify-content-end">
                 <button type="button" class="btn btn-danger me-2" @click="cancel">Hủy</button>
-                <button type="submit" class="btn btn-primary" :disabled="errorTitle || !blog.content || !blog.user_id">Lưu</button>
+                <button type="submit" class="btn btn-primary"
+                    :disabled="errorMessage || !blog.title || !blog.content">
+                   Lưu
+                </button>
             </div>
         </form>
     </div>
@@ -77,7 +48,7 @@
 
 <script>
 import axios from "axios";
-
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 export default {
     data() {
         return {
@@ -85,9 +56,11 @@ export default {
                 title: '',
                 content: '',
                 user_id: '',
-                thumbnail: null
+                thumbnail: null,
+                status: null
             },
             errorTitle: '',
+            editor: ClassicEditor,
         };
     },
     computed: {
@@ -109,7 +82,7 @@ export default {
         },
         async fetchBlog() {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/blogs/${this.idEncode}`);
+                const response = await axios.get(`http://127.0.0.1:8000/api/blog/${this.idEncode}`);
                 this.blog = response.data;
             } catch (error) {
                 console.error("Có lỗi xảy ra khi lấy thông tin blog:", error);
@@ -118,6 +91,7 @@ export default {
         async updateBlog() {
             try {
                 const formData = new FormData();
+                formData.append('id', this.idEncode);
                 formData.append('title', this.blog.title);
                 formData.append('content', this.blog.content);
                 formData.append('user_id', this.blog.user_id);

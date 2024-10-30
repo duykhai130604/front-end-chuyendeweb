@@ -14,18 +14,27 @@
             <!-- Nội dung -->
             <div class="mb-3">
                 <label for="content" class="form-label">Nội dung</label>
-                <textarea class="form-control" id="content" v-model="content" rows="6" placeholder="Nhập nội dung blog"
-                    required></textarea>
+                <div style="height: auto;">
+                    <ckeditor  rows="6"  class="form-control" required id="content"  placeholder="Nhập nội dung blog" :editor="editor" v-model="content" @ready="onReady" />
+                </div>
             </div>
             <!-- Hình thu nhỏ -->
             <div class="mb-3">
                 <label for="thumbnail" class="form-label">Hình thu nhỏ</label>
                 <input type="file" class="form-control" id="thumbnail" @change="handleFileUpload" accept="image/*" />
             </div>
+            <div class="mb-3">
+                <label for="status" class="form-label">Trạng thái</label>
+                <select class="form-select" id="status" v-model="status" required>
+                    <option :value="1">Công khai</option>
+                    <option :value="0">Nháp</option>
+                </select>
+            </div>
             <!-- Buttons -->
             <div class="d-flex justify-content-end">
                 <button type="button" class="btn btn-danger me-2" @click="cancel">Hủy</button>
-                <button type="submit" class="btn btn-primary" :disabled="errorMessage || !title || !content || !user_id">
+                <button type="submit" class="btn btn-primary"
+                    :disabled="errorMessage || !title || !content || !user_id">
                     Thêm
                 </button>
             </div>
@@ -35,7 +44,7 @@
 
 <script>
 import axios from "axios";
-
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 export default {
     data() {
         return {
@@ -43,7 +52,10 @@ export default {
             content: '',
             user_id: 1,
             errorMessage: '',
-            thumbnail: null
+            thumbnail: null,
+            editor: ClassicEditor,
+            status:0
+
         };
     },
     methods: {
@@ -67,8 +79,8 @@ export default {
                     formData.append('content', this.content);
                     formData.append('thumbnail', this.thumbnail);
                     formData.append('user_id', this.user_id);
-
-                    const response = await axios.post('http://127.0.0.1:8000/api/add-blog', formData );
+                    formData.append('status', this.status);
+                    const response = await axios.post('http://127.0.0.1:8000/api/add-blog', formData);
                     if (response) {
                         alert("Blog đã được thêm thành công!");
                         this.$router.push({ name: 'list-blogs' });
