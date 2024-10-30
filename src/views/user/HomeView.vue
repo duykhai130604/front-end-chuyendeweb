@@ -1,10 +1,14 @@
 <template>
-    <TheHeader />
+    <TheHeader :userAuth="userAuth" />
     <Cart/>
     <Slider/>
     <HomeBanner/>
+<<<<<<< HEAD
     <HomeNewProducts/>
     <HomeAllProducts/>
+=======
+    <HomeAllProducts :userAuth="userAuth"/>
+>>>>>>> origin
     <TheFooter />
     <ProductModal/>
     <router-view></router-view>
@@ -43,6 +47,7 @@ import "../../assets/vendor/perfect-scrollbar/perfect-scrollbar.min.js";
 // import "./assets/js/main.js";
 // Khởi tạo Vue app và sử dụng router
 
+<<<<<<< HEAD
 import TheHeader from "../../components/user/TheHeader.vue";
 import TheFooter from "../../components/user/TheFooter.vue";
 import Cart from "../../components/user/home/HomeCart.vue";
@@ -56,6 +61,43 @@ import "../../assets/js/main.js";
 export default {
     components: {
         TheHeader, TheFooter,Cart, Slider, HomeBanner, HomeAllProducts,ProductModal, HomeNewProducts
+=======
+import TheHeader from "@/components/user/TheHeader.vue";
+import TheFooter from "@/components/user/TheFooter.vue";
+import Cart from "@/components/user/home/HomeCart.vue";
+import Slider from "@/components/user/home/HomeSlider.vue";
+import HomeBanner from "@/components/user/home/HomeBanner.vue";
+import HomeAllProducts from "@/components/user/home/HomeAllProducts.vue";
+import ProductModal from "@/components/user/ProductModal.vue";
+import axios from 'axios';
+import { API_BASE_URL } from '@/utils/config';
+export default {
+    components: {
+        TheHeader, TheFooter,Cart, Slider, HomeBanner, HomeAllProducts,ProductModal
+    },
+  data() {
+    return {
+      userAuth: null,
+    };
+  },
+    methods: {
+    async fetchUser() {
+      try {
+        const re = await axios.get(API_BASE_URL + '/me', {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        this.userAuth = re.data;
+      } catch (error) {
+        console.log('nothing to show');
+      }
+>>>>>>> origin
     }
+  },
+  created() {
+    this.fetchUser();
+  }
 }
 </script>

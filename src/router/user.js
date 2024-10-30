@@ -27,5 +27,10 @@ const home = [
         component: () => import("../views/user/blog/ListBlogsView.vue"),
         name:"blogs"
     },
+    {
+        path: "/product/:id",
+        component: () => import("../views/user/product/ProductDetailView.vue"),
+        name:"product"
+    },
 ];
 export default home;

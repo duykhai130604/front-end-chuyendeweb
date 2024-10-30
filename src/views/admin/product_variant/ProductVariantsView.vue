@@ -11,9 +11,6 @@ import "../../../assets/admin/assets/js/plugin/jquery-scrollbar/jquery.scrollbar
 import "../../../assets/admin/assets/js/core/bootstrap.min copy";
 import "../../../assets/admin/assets/js/core/jquery-3.7.1.min copy"
 import ProductVariants from "../../../components/admin/product_variant/ProductVariants.vue";
-// import "../../assets/admin/assets/js/core/popper.min copy"
-// import "../../assets/admin/assets/js/setting-demo2"
-// import "../../assets/admin/assets/js/kaiadmin"
 export default {
     components: {
         ProductVariants

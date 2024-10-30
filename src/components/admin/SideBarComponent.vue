@@ -38,9 +38,6 @@
                         <router-link to="/admin/products">Products</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link to="/admin/productVariants">Product Variants</router-link>
-                    </li>
-                    <li class="nav-item">
                         <a href="#">Orders</a>
                     </li>
                     <li class="nav-item">
