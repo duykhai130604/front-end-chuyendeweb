@@ -1,4 +1,4 @@
-<template>
+<template> 
     <div>
         <div class="container">
             <div class="page-inner">
@@ -20,6 +20,7 @@
                                                 <th>STT</th>
                                                 <th>Tiêu đề</th>
                                                 <th>Tác giả</th>
+                                                <th>Hình ảnh</th> <!-- Thêm cột Hình ảnh -->
                                                 <th>Ngày tạo</th>
                                                 <th>Ngày cập nhật</th>
                                                 <th></th>
@@ -27,19 +28,23 @@
                                         </thead>
                                         <tbody>
                                             <tr v-if="blogs.length === 0">
-                                                <td colspan="5" class="text-center">{{ message }}</td>
+                                                <td colspan="7" class="text-center">{{ message }}</td>
                                             </tr>
                                             <tr v-for="(blog, index) in blogs" :key="blog.id">
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ blog.title }}</td>
                                                 <td>{{ getName(blog.user_id) }}</td>
+                                                <td>
+                                                    <!-- Hiển thị hình ảnh nếu tồn tại -->
+                                                    <img :src="blog.image_url" alt="Blog Image" width="50" height="50" v-if="blog.image_url" />
+                                                    <!-- Thông báo nếu không có ảnh -->
+                                                    <span v-else>Không có ảnh</span>
+                                                </td>
                                                 <td>{{ formatDate(blog.created_at) }}</td>
                                                 <td>{{ formatDate(blog.updated_at) }}</td>
                                                 <td>
-                                                    <a @click="getEncrypt(blog.id)"
-                                                        class="btn btn-primary btn-sm">Sửa</a>
-                                                    <a @click.prevent="deleteBlog(blog.id)"
-                                                        class="btn btn-danger btn-sm">Xóa</a>
+                                                    <a @click="getEncrypt(blog.id)" class="btn btn-primary btn-sm">Sửa</a>
+                                                    <a @click.prevent="deleteBlog(blog.id)" class="btn btn-danger btn-sm">Xóa</a>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -49,31 +54,11 @@
                         </div>
                     </div>
                 </div>
-                <!-- Phần phân trang -->
-                <nav aria-label="pagination">
-                    <ul class="pagination">
-                        <li v-if="currentPage > 1">
-                            <a href="" @click.prevent="changePage(currentPage - 1)" aria-hidden="true">
-                                « <span class="visuallyhidden">Previous set of pages</span>
-                            </a>
-                        </li>
-                        <li v-for="page in totalPages" :key="page">
-                            <a href="" @click.prevent="changePage(page)" :class="{ 'active': currentPage === page }"
-                                :aria-current="currentPage === page ? 'page' : undefined">
-                                <span class="visuallyhidden">Page </span>{{ page }}
-                            </a>
-                        </li>
-                        <li v-if="currentPage < totalPages">
-                            <a href="" @click.prevent="changePage(currentPage + 1)" aria-hidden="true">
-                                <span class="visuallyhidden">Next set of pages</span> »
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
             </div>
         </div>
     </div>
 </template>
+
 
 <script>
 import axios from 'axios';
