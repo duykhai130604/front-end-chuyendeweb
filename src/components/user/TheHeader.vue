@@ -189,34 +189,10 @@
   </header>
 </template>
 <script>
-import axios from 'axios';
-import { API_BASE_URL } from '@/utils/config';
+//import axios from 'axios';
+//import { API_BASE_URL } from '@/utils/config';
 export default {
-  data() {
-    return {
-      user: null,
-      userAuth: null,
-    }
-  },
-  methods: {
-    async fetchUser() {
-      try {
-    const re = await axios.get(API_BASE_URL + '/me', {
-      withCredentials: true, 
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    this.userAuth = re.data;
-    
-  } catch (error) {
-    console.log(error);
-  }
-      
-    }
-  },
-  created() {
-this.fetchUser();
-  }
+  props: ['userAuth']
+  
 }
 </script>

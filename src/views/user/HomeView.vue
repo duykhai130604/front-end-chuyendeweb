@@ -1,9 +1,9 @@
 <template>
-    <TheHeader />
+    <TheHeader :userAuth="userAuth" />
     <Cart/>
     <Slider/>
     <HomeBanner/>
-    <HomeAllProducts/>
+    <HomeAllProducts :userAuth="userAuth"/>
     <TheFooter />
     <ProductModal/>
     <router-view></router-view>
@@ -49,10 +49,34 @@ import Slider from "@/components/user/home/HomeSlider.vue";
 import HomeBanner from "@/components/user/home/HomeBanner.vue";
 import HomeAllProducts from "@/components/user/home/HomeAllProducts.vue";
 import ProductModal from "@/components/user/ProductModal.vue";
-
+import axios from 'axios';
+import { API_BASE_URL } from '@/utils/config';
 export default {
     components: {
         TheHeader, TheFooter,Cart, Slider, HomeBanner, HomeAllProducts,ProductModal
+    },
+  data() {
+    return {
+      userAuth: null,
+    };
+  },
+    methods: {
+    async fetchUser() {
+      try {
+        const re = await axios.get(API_BASE_URL + '/me', {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        this.userAuth = re.data;
+      } catch (error) {
+        console.log('nothing to show');
+      }
     }
+  },
+  created() {
+    this.fetchUser();
+  }
 }
 </script>
