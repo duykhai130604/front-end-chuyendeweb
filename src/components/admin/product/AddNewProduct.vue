@@ -27,12 +27,12 @@
                                                 v-model="productData.discount" placeholder="Discount"
                                                 :errorMessage="errors.discount" />
                                         </div>
-                                        <div class="col-12">
+                                        <div class="col-6">
                                             <div class="form-check">
                                                 <LabelComponent text="Categories" htmlFor="categorySelect" />
-                                                <div v-for="category in categories" :key="category.id"
-                                                    :value="category.id">
-                                                    <input v-model="productData.categories" name="categories[]" class="form-check-input" type="checkbox" :value="category.id"
+                                                <div v-for="category in categories" :key="category.id">
+                                                    <input v-model="productData.categories" name="categories[]"
+                                                        class="form-check-input" type="checkbox" :value="category.id"
                                                         id="flexCheckDefault">
                                                     <label class="form-check-label" for="flexCheckDefault">
                                                         {{ category.name }}
@@ -40,6 +40,13 @@
                                                 </div>
                                                 <ErrorMessage :errorMessage="errors.categories" />
                                             </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <LabelComponent text="Thumbnail" />
+                                            <br>
+                                            <input type="file" class="form-control-file" id="image"
+                                                @change="handleFileUpload" />
+                                            <ErrorMessage :errorMessage="errors.image" />
                                         </div>
                                         <div class="col-12">
                                             <LabelComponent text="Description" htmlFor="description" />
@@ -77,9 +84,16 @@ import ErrorMessage from '../../common/ErrorMessageComponent.vue';
 import InputComponent from '../../common/InputComponent.vue';
 import ButtonComponent from '../../common/ButtonComponent.vue';
 import LabelComponent from '../../common/LabelComponent.vue';
+import { useToast } from 'vue-toastification';
 
 export default {
     name: 'AddProduct',
+    setup() {
+        const toast = useToast();
+        return {
+            toast
+        };
+    },
     components: {
         SideBarComponent,
         NavbarComponent,
@@ -99,7 +113,8 @@ export default {
                 price: '',
                 discount: 0,
                 categories: [],
-                desc: ''
+                desc: '',
+                image: null
             },
             categories: [],
             errors: {},
@@ -107,49 +122,65 @@ export default {
             loadingPercentage: 0
         };
     },
-    mounted() {
-        axios.get(`${API_BASE_URL}/getAllCategories`)
-            .then(response => {
-                this.categories = response.data;
-            })
-            .catch(error => {
-                console.error("Error fetching categories:", error);
-            });
-    },
     methods: {
+        handleFileUpload(event) {
+            const file = event.target.files[0];
+            this.productData.image = file ? file : null;
+        },
+
         submitProduct() {
             if (this.isLoading) return;
             this.isLoading = true;
             this.loadingPercentage = 0;
-            
-            const productData = {
-                name: this.productData.name,
-                price: Number(this.productData.price),
-                discount: Number(this.productData.discount) || 0,
-                categories: this.productData.categories, // Gửi mảng danh mục
-                desc: this.productData.desc,
-                status: 1 // Status cố định 1 cho sản phẩm mới
-            };
 
-            axios.post(`${API_BASE_URL}/admin/addProduct`, productData, {
-                onUploadProgress: progressEvent => {
+            const formData = new FormData();
+            formData.append('name', this.productData.name);
+            formData.append('price', this.productData.price);
+            formData.append('discount', this.productData.discount);
+            formData.append('desc', this.productData.desc);
+            formData.append('status', 1);
+
+            this.productData.categories.forEach(category => {
+                formData.append('categories[]', category);
+            });
+
+            if (this.productData.image) {
+                formData.append('image', this.productData.image);
+            }
+
+            const config = {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                onUploadProgress: (progressEvent) => {
                     this.loadingPercentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                 }
-            })
+            };
+
+            axios.post(`${API_BASE_URL}/admin/addProduct`, formData, config)
                 .then(response => {
                     this.isLoading = false;
-                    alert(response.data.message);
+                    this.toast.success(response.data.message, {
+                        position: 'top-center',
+                        timeout: 1500,
+                        pauseOnHover: false,
+                    });
                     this.$router.push('/admin/products');
                 })
                 .catch(error => {
                     this.isLoading = false;
                     if (error.response && error.response.status === 422) {
                         this.errors = error.response.data.errors;
-                    } else {
-                        alert('System error, please try again later');
                     }
                 });
         }
+    },
+    mounted() {
+        axios.get(`${API_BASE_URL}/getAllCategories`)
+            .then(response => {
+                this.categories = response.data;
+            })
+            .catch(error => {
+                this.errors = error.response.data.errors;
+            });
     }
 }
 </script>

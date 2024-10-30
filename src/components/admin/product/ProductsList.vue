@@ -48,8 +48,8 @@
                                                             </router-link>
                                                             <ButtonComponent btnClass="btn-link btn-danger"
                                                                 icon="fa fa-times" @click="confirmDelete(product.id)" />
-
-                                                            <router-link to="/admin/productVariants">
+                                                            <router-link
+                                                                :to="{ name: 'productVariants', params: { id: product.id } }">
                                                                 <ButtonComponent btnClass="btn-link btn-info"
                                                                     icon="fa fa-list" />
                                                             </router-link>
@@ -81,9 +81,16 @@ import NavbarComponent from '../NavbarComponent.vue';
 import PaginationComponent from '../../common/PaginationComponent.vue';
 import ButtonComponent from '../../common/ButtonComponent.vue';
 import axios from 'axios';
+import { useToast } from 'vue-toastification';
 
 export default {
     name: 'ProductList',
+    setup() {
+        const toast = useToast();
+        return {
+            toast
+        };
+    },
     components: {
         SideBarComponent,
         HeaderComponent,
@@ -153,43 +160,45 @@ export default {
             });
         },
         confirmDelete(id) {
-            if (this.isDeleting) {
-                return;
-            }
-
-            this.isDeleting = true;
             if (confirm('Are you sure you want to delete this product?')) {
                 this.deleteProduct(id);
-            } else {
-                this.isDeleting = false;
             }
         },
 
         deleteProduct(id) {
-            const data = JSON.stringify({ id: id });
             const config = {
                 method: 'delete',
-                maxBodyLength: Infinity,
                 url: `${API_BASE_URL}/admin/deleteProduct`,
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                data: data
+                data: JSON.stringify({ id: id })
             };
 
             axios.request(config)
                 .then((response) => {
-                    alert(response.data.message);
+                    this.toast.success(response.data.message, {
+                        position: 'top-center',
+                        timeout: 1500,
+                        pauseOnHover: false,
+                    });
                     this.fetchProducts(this.currentPage, this.keyword);
                 })
                 .catch((error) => {
-                    console.error(error);
                     if (error.response && error.response.data) {
-                        alert(error.response.data.message);
+                        this.toast.error(error.response.data.message || 'An unexpected error occurred.', {
+                            position: 'top-center',
+                            timeout: 1500,
+                            pauseOnHover: false,
+                        });
                     } else {
-                        alert('An unexpected error occurred.');
+                        this.toast.error('An unexpected error occurred.', {
+                            position: 'top-center',
+                            timeout: 1500,
+                            pauseOnHover: false,
+                        });
                     }
-                })
+                });
         }
     }
 };

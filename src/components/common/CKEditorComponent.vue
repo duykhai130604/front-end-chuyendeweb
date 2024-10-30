@@ -14,8 +14,9 @@ export default {
     },
     data() {
         return {
-            editor: ClassicEditor,
-            localData: this.modelValue || ''
+            editor: ClassicEditor, // Giữ lại biến editor
+            localData: this.modelValue || '',
+            editorInstance: null // Khai báo biến để lưu instance của editor
         };
     },
     watch: {
@@ -28,7 +29,7 @@ export default {
     },
     methods: {
         onReady(editor) {
-            console.log('Editor is ready!', editor);
+            this.editorInstance = editor;
         }
     }
 };
