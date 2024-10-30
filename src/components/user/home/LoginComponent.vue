@@ -25,6 +25,7 @@
             <div class="text-center mt-3">
                 <a href="http://localhost:8080/reset" class="text-decoration-none">Bạn quên <span
                         class="text-primary">mật khẩu?</span></a><br>
+                <a href="http://localhost:8080/reset" class="text-decoration-none">Bạn quên <span class="text-primary">mật khẩu?</span></a><br>
                 <a href="#" class="text-decoration-none">Bạn chưa có <span class="text-primary">tài khoản?</span></a>
             </div>
         </div>

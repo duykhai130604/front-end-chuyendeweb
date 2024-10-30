@@ -3,8 +3,8 @@
         <div class="page-header">
             <h3 class="fw-bold mb-3">Sửa Blog</h3>
         </div>
-        <form @submit.prevent="addBlog">
-            <!-- Tiêu đề Blog -->
+        <form @submit.prevent="updateBlog">
+            <!-- Tiêu đề Blog -->           
             <div class="mb-3">
                 <label for="title" class="form-label">Tiêu đề Blog</label>
                 <input type="text" class="form-control" id="title" v-model="blog.title" placeholder="Nhập tiêu đề blog"
@@ -21,7 +21,7 @@
             </div>
             <!-- Hình thu nhỏ -->
             <div class="mb-3">
-                <label for="thumbnail" class="form-label">Hình thu nhỏ</label>
+                <label for="thumbnail" class="form-label">Hình ảnh</label>
                 <input type="file" class="form-control" id="thumbnail" @change="handleFileUpload" accept="image/*" />
                 <div v-if="blog.thumbnail">
                     <img :src="blog.thumbnail" alt="Uploaded Image" class="img-thumbnail" style="max-width: 200px;" />
@@ -91,6 +91,7 @@ export default {
         async updateBlog() {
             try {
                 const formData = new FormData();
+                formData.append('id', this.idEncode);
                 formData.append('title', this.blog.title);
                 formData.append('content', this.blog.content);
                 formData.append('user_id', this.blog.user_id);
