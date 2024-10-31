@@ -17,5 +17,9 @@ const home = [
         path: "/register",
         component: () => import("../views/user/RegisterView.vue"),
     },
+    {
+        path: "/cart",
+        component: () => import("../views/user/cart/CartView.vue"),
+    },
 ];
 export default home;
