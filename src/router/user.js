@@ -1,7 +1,7 @@
 const home = [
     {
         path: "/",
-        name: "Home",
+        name: "home",
         component: () => import("../views/user/HomeView.vue"),
     },
     {
@@ -18,8 +18,19 @@ const home = [
         component: () => import("../views/user/RegisterView.vue"),
     },
     {
+<<<<<<< HEAD
         path: "/cart",
         component: () => import("../views/user/cart/CartView.vue"),
+=======
+        path: "/reset",
+        component: () => import("../views/user/ResetView.vue"),
+    },
+  {
+  
+        path: "/blogs",
+        component: () => import("../views/user/blog/ListBlogsView.vue"),
+        name:"blogs"
+>>>>>>> 5dc3fdfd5ce6aaec5b45c9c6898e2fe189563c71
     },
 ];
 export default home;

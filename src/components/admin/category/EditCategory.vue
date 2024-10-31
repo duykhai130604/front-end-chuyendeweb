@@ -14,10 +14,10 @@
             <!-- Danh mục cha -->
             <div class="mb-3">
                 <label for="parentCategory" class="form-label">Danh mục cha</label>
-                <select class="form-select" id="parentCategory" v-model="parentCategory">
+                <select class="form-select" id="parentCategory" v-model="category.parent_id">
                     <option value="0">Chọn danh mục cha</option>
                     <option v-for="parent in parentCategories" :key="parent.id" :value="parent.id"
-                        :selected="parent.id === parentCategory">
+                        :selected="parent.id === category.parent_id">
                         {{ parent.name }}
                     </option>
                 </select>
@@ -26,13 +26,14 @@
             <div class="d-flex justify-content-end">
                 <button type="button" class="btn btn-danger me-2" @click="cancel">Hủy</button>
                 <button type="submit" class="btn btn-primary"
-                    :disabled="errorMessage != '' || category.name == '' || parentCategory == null">Lưu</button>
+                    :disabled="errorMessage != '' || category.name == '' || category.parent_id == null">Lưu</button>
             </div>
         </form>
     </div>
 </template>
 
 <script>
+import { API_BASE_URL } from '../../../utils/config';
 import axios from 'axios';
 export default {
     data() {
@@ -44,7 +45,6 @@ export default {
             categories: [],
             parentCategories: [],
             errorMessage: '',
-            parentCategory: null
         };
     },
     computed: {
@@ -55,7 +55,7 @@ export default {
     methods: {
         async fetchCategory() {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/category/${this.idEncode}`);
+                const response = await axios.get(API_BASE_URL+`/category/${this.idEncode}`);
                 this.category = response.data;
 
             } catch (error) {
@@ -64,7 +64,7 @@ export default {
         },
         async getCategories() {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/getAllCategories');
+                const response = await axios.get(API_BASE_URL+'/getAllCategories');
                 this.categories = response.data;
                 this.parentCategories = this.categories.filter(category => {
                     return category.parent_id === 0 && (this.category && category.id != this.category.id);
@@ -88,11 +88,11 @@ export default {
             try {
                 const payload = {
                     id: this.idEncode,
-                    parent_id: this.parentCategory,
+                    parent_id: this.category.parent_id,
                     name: this.category.name,
                     status: 1
                 };
-                const response = await axios.post('http://127.0.0.1:8000/api/update-category', payload);
+                const response = await axios.post(API_BASE_URL+'/update-category', payload);
                 if (response.data == 0) {
                     alert("Danh mục bị trùng!!!")
                 } if (response.data == 1) {

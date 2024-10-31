@@ -21,7 +21,7 @@
                 </div>
             </form>
             <div class="text-center mt-3">
-                <a href="#" class="text-decoration-none">Bạn quên <span class="text-primary">mật khẩu?</span></a><br>
+                <a href="http://localhost:8080/reset" class="text-decoration-none">Bạn quên <span class="text-primary">mật khẩu?</span></a><br>
                 <a href="#" class="text-decoration-none">Bạn chưa có <span class="text-primary">tài khoản?</span></a>
             </div>
         </div>
@@ -39,6 +39,9 @@ export default {
         };
     },
     methods: {
+        reset() {
+            this.$router.push({ name: 'list-blogs' }); // Đường dẫn đến danh sách blog
+        },
         validateEmail(email) {
             const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/i;
             return re.test(email);

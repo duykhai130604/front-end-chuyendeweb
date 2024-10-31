@@ -26,6 +26,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <tr v-if="categories.length === 0">
+                                                <td colspan="5" class="text-center">{{ message }}</td>
+                                            </tr>
                                             <tr v-for="(category, index) in categories" :key="category.id">
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ category.name }}</td>
@@ -35,7 +38,8 @@
                                                 <td>
                                                     <a @click="getEncrypt(category.id)"
                                                         class="btn btn-primary btn-sm">Edit</a>
-                                                    <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                                                    <a @click="checkCategoryAsset(category.id)"
+                                                        class="btn btn-danger btn-sm">Delete</a>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -71,6 +75,7 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '../../../utils/config';
 import axios from 'axios';
 export default {
     data() {
@@ -80,13 +85,14 @@ export default {
             idEncode: 0,
             currentPage: 1,
             totalPages: 0,
+            message: "Không tồn tại một dữ liệu nào",
         };
     },
     methods: {
         async getCategoriesByPage(page) {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/categories?page=${page}`);
-                this.categories = response.data.data;
+                const response = await axios.get(`${API_BASE_URL}/categories?page=${page}`);
+                this.categories = response.data.data.filter(category => category.status === 1);                
                 this.totalPages = response.data.last_page;
                 this.currentPage = response.data.current_page;
 
@@ -99,7 +105,7 @@ export default {
         async fetchParentCategories() {
             try {
                 const parentIds = this.categories.map(category => category.parent_id).filter(id => id !== null);
-                const response = await axios.get(`http://127.0.0.1:8000/api/categories/parent?ids=${parentIds.join(',')}`);
+                const response = await axios.get(`${API_BASE_URL}/categories/parent?ids=${parentIds.join(',')}`);
                 response.data.forEach(parent => {
                     this.parentCategories[parent.id] = parent.name;
                 });
@@ -108,7 +114,7 @@ export default {
             }
         },
         getParentCategoryName(parentId) {
-            return this.parentCategories[parentId] || 'No Parent'; // Hoặc bạn có thể trả về một giá trị khác nếu không có danh mục cha
+            return this.parentCategories[parentId] || 'No Parent';
         },
         formatDate(date) {
             const d = new Date(date);
@@ -122,9 +128,8 @@ export default {
         },
         async getEncrypt(id) {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/encrypt/${id}`);
+                const response = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
                 this.idEncode = response.data.encrypted_id;
-                console.log(this.idEncode);
                 this.$router.push({
                     name: 'edit-category',
                     params: { idEncode: this.idEncode }
@@ -140,6 +145,46 @@ export default {
             if (page < 1 || page > this.totalPages) return;
             this.getCategoriesByPage(page);
         },
+        async checkCategoryAsset(id) {
+            try {
+                const response = await axios.post(`${API_BASE_URL}/category/check-assets`, {
+                    id: id,
+                });
+
+                if (response.status === 200) {
+                    // Category can be deleted
+                    if (confirm('Bạn có chắc muốn xóa?')) {
+                        const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
+                        const deleteId = encryptResponse.data.encrypted_id;
+                        const deleteResponse = await axios.delete(`${API_BASE_URL}/delete-category/${deleteId}`);
+
+                        if (deleteResponse) {
+                            alert('Xóa thành công!');
+                            this.getCategoriesByPage(this.currentPage);
+                        } else {
+                            alert('Lỗi khi xóa danh mục!');
+                        }
+                    }
+                } else if (response.status === 201) {
+                    // Category has child categories or products
+                    alert('Danh mục này tồn tại các danh mục con và các sản phẩm thuộc nó. Bạn phải chuyển sang một danh mục khác trước khi xóa!');
+
+                    // Redirect to the category-assets page
+                    const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
+                    this.idEncode = encryptResponse.data.encrypted_id;
+                    this.$router.push({
+                        name: 'category-assets',
+                        params: { idEncode: this.idEncode }
+                    });
+                } else {
+                    alert('Không thể kiểm tra tài sản danh mục. Vui lòng thử lại sau.');
+                }
+            } catch (error) {
+                console.error("There was an error checking category assets:", error.response);
+                alert("Đã xảy ra lỗi khi kiểm tra tài sản danh mục!");
+            }
+        }
+
     },
     created() {
         this.getCategoriesByPage(this.currentPage);
