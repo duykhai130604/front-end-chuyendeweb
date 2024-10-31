@@ -1,11 +1,13 @@
 .DS_Store
-node_modules
+/node_modules
+/docker
 /dist
 
 
 # local env files
 .env.local
 .env.*.local
+/Dockerfile
 
 # Log files
 npm-debug.log*
