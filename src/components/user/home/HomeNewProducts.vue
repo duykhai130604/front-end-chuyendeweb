@@ -75,6 +75,7 @@
 
 <script>
 import axios from 'axios';
+import { API_BASE_URL } from '../../../utils/config';
 
 export default {
 data() {
@@ -88,8 +89,7 @@ async created() {
 methods: {
  async fetchNewProducts() {
  try {
-     const response = await axios.get('http://127.0.0.1:8000/api/products/top');
-     console.log(response.data); // Kiểm tra dữ liệu trả về từ API
+     const response = await axios.get(API_BASE_URL+'/products/top');
      this.products = response.data;
  } catch (error) {
      console.error('Có lỗi xảy ra:', error);
