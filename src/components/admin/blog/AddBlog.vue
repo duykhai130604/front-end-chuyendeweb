@@ -20,7 +20,7 @@
             </div>
             <!-- Hình thu nhỏ -->
             <div class="mb-3">
-                <label for="thumbnail" class="form-label">Hình thu nhỏ</label>
+                <label for="thumbnail" class="form-label">Hình ảnh</label>
                 <input type="file" class="form-control" id="thumbnail" @change="handleFileUpload" accept="image/*" />
             </div>
             <div class="mb-3">

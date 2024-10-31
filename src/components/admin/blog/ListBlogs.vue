@@ -1,4 +1,4 @@
-<template>
+<template> 
     <div>
         <div class="container">
             <div class="page-inner">
@@ -20,6 +20,7 @@
                                                 <th>STT</th>
                                                 <th>Tiêu đề</th>
                                                 <th>Tác giả</th>
+                                                <th>Hình ảnh</th> <!-- Thêm cột Hình ảnh -->
                                                 <th>Ngày tạo</th>
                                                 <th>Ngày cập nhật</th>
                                                 <th></th>
@@ -27,12 +28,18 @@
                                         </thead>
                                         <tbody>
                                             <tr v-if="blogs.length === 0">
-                                                <td colspan="5" class="text-center">{{ message }}</td>
+                                                <td colspan="7" class="text-center">{{ message }}</td>
                                             </tr>
                                             <tr v-for="(blog, index) in blogs" :key="blog.id">
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ blog.title }}</td>
                                                 <td>{{ getName(blog.user_id) }}</td>
+                                                <td>
+                                                    <!-- Hiển thị hình ảnh nếu tồn tại -->
+                                                    <img :src="blog.image_url" alt="Blog Image" width="50" height="50" v-if="blog.image_url" />
+                                                    <!-- Thông báo nếu không có ảnh -->
+                                                    <span v-else>Không có ảnh</span>
+                                                </td>
                                                 <td>{{ formatDate(blog.created_at) }}</td>
                                                 <td>{{ formatDate(blog.updated_at) }}</td>
                                                 <td>
@@ -52,6 +59,7 @@
     </div>
 </template>
 
+
 <script>
 import axios from 'axios';
 
@@ -61,10 +69,22 @@ export default {
             blogs: [],
             idEncode: 0,
             users: {},
+            currentPage: 1,
+            totalPages: 0,
             message: "Không tồn tại một dữ liệu nào",
         };
     },
     methods: {
+        async getBlogsbypage(page = 1) {
+            try {
+                const response = await axios.get(`http://127.0.0.1:8000/api/blogs?page=${page}&perPage=${this.perPage}`);
+                this.blogs = response.data.data;
+                this.totalPages = response.data.last_page; // Cập nhật số trang từ API
+                this.currentPage = response.data.current_page; // Cập nhật trang hiện tại
+            } catch (error) {
+                console.error("Có lỗi xảy ra khi lấy danh sách blog:", error);
+            }
+        },
         async getBlogs() {
             try {
                 const response = await axios.get('http://127.0.0.1:8000/api/blogs');
@@ -81,7 +101,7 @@ export default {
             const hours = String(d.getHours()).padStart(2, '0');
             const minutes = String(d.getMinutes()).padStart(2, '0');
             const seconds = String(d.getSeconds()).padStart(2, '0');
-            
+
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         },
         async getEncrypt(id) {
@@ -103,14 +123,14 @@ export default {
                 try {
                     await axios.delete(`http://127.0.0.1:8000/api/delete-blog/${idEncode}`);
                     alert("Xóa blog thành công!");
-                    this.getBlogs(); 
+                    this.getBlogs();
                 } catch (error) {
                     console.error("Có lỗi xảy ra khi xóa blog:", error);
                 }
             }
         },
-        async getNameAuthor(){
-            const ids = this.blogs.map(blog => blog.user_id).filter(user_id => user_id  !== null);
+        async getNameAuthor() {
+            const ids = this.blogs.map(blog => blog.user_id).filter(user_id => user_id !== null);
             if (ids.length) {
                 const response = await axios.get(`http://127.0.0.1:8000/api/get-authorname?ids=${ids.join(',')}`);
                 response.data.forEach(element => {
@@ -125,6 +145,10 @@ export default {
             this.$router.push({ name: 'add-blog' });
         },
     },
+    changePage(page) {
+            if (page < 1 || page > this.totalPages) return;
+            this.getBlogsbypage(page);
+        },
     async created() {
         await this.getBlogs(); // Đợi lấy danh sách blog trước
         await this.getNameAuthor(); // Sau đó gọi hàm lấy tên tác giả
