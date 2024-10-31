@@ -10,25 +10,12 @@
           </div>
 
           <div class="right-top-bar flex-w h-full">
-<<<<<<< HEAD
             <a href="#" class="flex-c-m trans-04 p-lr-25"> Help & FAQs </a>
-
-            <a href="#" class="flex-c-m trans-04 p-lr-25"> My Account </a>
-
             <a href="#" class="flex-c-m trans-04 p-lr-25"> EN </a>
-
             <a href="#" class="flex-c-m trans-04 p-lr-25"> USD </a>
-
-            <button style="color: aliceblue;" class="flex-c-m trans-04 p-lr-25" @click="logout">Logout</button>
-=======
-            <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">Log out</a>
+            <button style="color: aliceblue;" class="flex-c-m trans-04 p-lr-25" v-if="userAuth" @click="logout">Logout</button>
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-else>Log in</a>
             <a href="#" class="flex-c-m trans-04 p-lr-25" v-if="userAuth">{{ userAuth.name }} </a>
-
-            <a href="#" class="flex-c-m trans-04 p-lr-25"> EN </a>
-
-            <a href="#" class="flex-c-m trans-04 p-lr-25"> USD </a>
->>>>>>> origin
           </div>
         </div>
       </div>
@@ -136,16 +123,13 @@
 
         <li>
           <div class="right-top-bar flex-w h-full">
-<<<<<<< HEAD
             <a href="#" class="flex-c-m p-lr-10 trans-04"> Help & FAQs </a>
 
             <a href="#" class="flex-c-m p-lr-10 trans-04"> My Account </a>
-=======
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">Log out</a>
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-else>Log in</a>
 
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">{{ userAuth.name }} </a>
->>>>>>> origin
 
             <a href="#" class="flex-c-m p-lr-10 trans-04"> EN </a>
 
@@ -206,12 +190,11 @@
     </div>
   </header>
 </template>
-<<<<<<< HEAD
-
 <script>
 import axios from 'axios';
-
+import { API_BASE_URL } from '@/utils/config';
 export default {
+  props: ['userAuth'],
   methods: {
     async logout() {
       // Hiện thông báo xác nhận
@@ -231,13 +214,8 @@ export default {
           this.$router.push({ name: 'login' });
           return;
         }
-
         // Gửi yêu cầu logout tới API
-        await axios.post('http://localhost:8000/api/logout', {}, {
-          headers: {
-            Authorization: `Bearer ${token}` // Sử dụng token nếu có
-          }
-        });
+        await axios.post(API_BASE_URL+'/logout');
 
         // Xóa token khỏi local storage
         localStorage.removeItem('token');
@@ -251,13 +229,5 @@ export default {
     }
 
   }
-=======
-<script>
-//import axios from 'axios';
-//import { API_BASE_URL } from '@/utils/config';
-export default {
-  props: ['userAuth']
-  
->>>>>>> origin
 }
 </script>

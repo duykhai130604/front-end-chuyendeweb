@@ -38,13 +38,13 @@
               </div>
             </div>
           </div>
+          <!-- Load more -->
+          <div id="app" v-if="hasMoreProducts">
+            <div v-for="product in products" :key="product.id" class="product-item">
+              <!-- Hiển thị thông tin sản phẩm -->
+              <p>{{ product.name }}</p>
+            </div>
         </div>
-        <!-- Load more -->
-        <div id="app" v-if="hasMoreProducts">
-          <div v-for="product in products" :key="product.id" class="product-item">
-            <!-- Hiển thị thông tin sản phẩm -->
-            <p>{{ product.name }}</p>
-          </div>
 
           <div class="flex-c-m flex-w w-full p-t-45">
             <button @click="loadMore" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
