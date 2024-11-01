@@ -13,9 +13,10 @@
             <a href="#" class="flex-c-m trans-04 p-lr-25"> Help & FAQs </a>
             <a href="#" class="flex-c-m trans-04 p-lr-25"> EN </a>
             <a href="#" class="flex-c-m trans-04 p-lr-25"> USD </a>
-            <button style="color: aliceblue;" class="flex-c-m trans-04 p-lr-25" v-if="userAuth" @click="logout">Logout</button>
-            <a href="#" class="flex-c-m p-lr-10 trans-04" v-else>Log in</a>
-            <a href="#" class="flex-c-m trans-04 p-lr-25" v-if="userAuth">{{ userAuth.name }} </a>
+            <button style="color: aliceblue;" class="flex-c-m trans-04 p-lr-25" v-if="userAuth"
+              @click="logout">Logout</button>
+            <router-link to="/login" class="flex-c-m p-lr-10 trans-04" v-else>Log in</router-link>
+            <a href="#" class="flex-c-m trans-04 p-lr-25" v-if="userAuth">{{ userAuth }} </a>
           </div>
         </div>
       </div>
@@ -129,7 +130,7 @@
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">Log out</a>
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-else>Log in</a>
 
-            <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">{{ userAuth.name }} </a>
+            <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">{{ userAuth }} </a>
 
             <a href="#" class="flex-c-m p-lr-10 trans-04"> EN </a>
 
@@ -194,7 +195,11 @@
 import axios from 'axios';
 import { API_BASE_URL } from '@/utils/config';
 export default {
-  props: ['userAuth'],
+  data() {
+    return {
+      userAuth: []
+    };
+  },
   methods: {
     async logout() {
       // Hiện thông báo xác nhận
@@ -206,28 +211,21 @@ export default {
       }
 
       try {
-        const token = localStorage.getItem('token');
+        await axios.post(`${API_BASE_URL}/logout`, null, {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
-        // Kiểm tra token trước khi gửi yêu cầu
-        if (!token) {
-          console.warn('No token found, user is already logged out.');
-          this.$router.push({ name: 'login' });
-          return;
-        }
-        // Gửi yêu cầu logout tới API
-        await axios.post(API_BASE_URL+'/logout');
-
-        // Xóa token khỏi local storage
-        localStorage.removeItem('token');
-
-        // Chuyển hướng đến trang login
         this.$router.push({ name: 'login' });
       } catch (error) {
         console.error('Error during logout:', error.response ? error.response.data : error.message);
-        // Bạn có thể hiển thị thông báo cho người dùng nếu cần
       }
     }
-
+  },
+  created() {
+    this.userAuth = localStorage.getItem('user') ?? null;
   }
 }
 </script>
