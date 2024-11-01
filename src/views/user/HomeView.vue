@@ -1,14 +1,14 @@
 <template>
-    <TheHeader :userAuth="userAuth" />
-    <Cart/>
-    <Slider/>
-    <HomeBanner/>
-    <HomeNewProducts/>
-    <HomeAllProducts/>
-    <HomeAllProducts :userAuth="userAuth"/>
-    <TheFooter />
-    <ProductModal/>
-    <router-view></router-view>
+  <TheHeader :userAuth="userAuth" />
+  <Cart />
+  <Slider />
+  <HomeBanner />
+  <HomeNewProducts />
+  <HomeAllProducts />
+  <HomeAllProducts :userAuth="userAuth" />
+  <TheFooter />
+  <ProductModal />
+  <router-view></router-view>
 </template>
 <script>
 
@@ -58,15 +58,15 @@ import axios from 'axios';
 import { API_BASE_URL } from '@/utils/config';
 
 export default {
-    components: {
-        TheHeader, TheFooter,Cart, Slider, HomeBanner, HomeAllProducts,ProductModal, HomeNewProducts
-    },
+  components: {
+    TheHeader, TheFooter, Cart, Slider, HomeBanner, HomeAllProducts, ProductModal, HomeNewProducts
+  },
   data() {
     return {
       userAuth: null,
     };
   },
-    methods: {
+  methods: {
     async fetchUser() {
       try {
         const re = await axios.get(API_BASE_URL + '/me', {
@@ -76,13 +76,19 @@ export default {
           }
         });
         this.userAuth = re.data;
+        localStorage.setItem('user', this.userAuth.name)
       } catch (error) {
         console.log('nothing to show');
-      }   
-     }
+      }
+    }
   },
   created() {
     this.fetchUser();
+  },
+  watch() {
+    if (!this.userAuth) {
+      localStorage.removeItem('user');
+    }
   }
 }
 </script>
