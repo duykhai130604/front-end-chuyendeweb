@@ -47,14 +47,12 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 col-lg-5 p-b-30">
+                <div class="col-md-6 col-lg-5 p-b-30"   >
                     <div class="p-r-50 p-t-5 p-lr-0-lg">
                         <h4 class="mtext-105 cl2 js-name-detail p-b-14">
-                            Lightweight Jacket
                         </h4>
 
                         <span class="mtext-106 cl2">
-                            $58.79
                         </span>
 
                         <p class="stext-102 cl3 p-t-23">
@@ -185,6 +183,27 @@
     </section>
 </template>
 <script>
+import axios from 'axios';
+import { API_BASE_URL } from '@/utils/config';
+export default {
+    name: 'ProductPage',
+    data() {
+        return {
+            productId: null,
+            product: {},
+        };
+    },
+    methods: {
+        async fetchSimilarProducts() {
+            this.productId = this.$route.params.id;
+            const response = await axios.get(API_BASE_URL + '/products/similar/'+this.productId);
+            this.similarProducts = response.data
+        }
+    },
+    created() {
+        this.fetchSimilarProducts();
+    }
+};
 
 </script>
 <style scoped>

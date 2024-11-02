@@ -334,7 +334,7 @@ export default {
             try {
                 this.selectedAuthorId=null;
                 const response = await axios.get(API_BASE_URL + '/user-blogs?page=' + page);
-                this.blogs = response.data.data;
+                this.blogs = response.data.data.filter(blog => blog.status === 1);
                 this.totalPages = response.data.last_page;
                 this.currentPage = response.data.current_page;
             } catch (error) {
@@ -346,7 +346,6 @@ export default {
                 const response = await axios.get(API_BASE_URL + '/authors-count-blog');
 
                 this.authors = response.data;
-                console.log(response.data);
 
             } catch (error) {
                 console.error('Lỗi khi lấy blogs:', error);
@@ -382,7 +381,7 @@ export default {
                 const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
                 const idCrypt = encryptResponse.data.encrypted_id;
                 const response = await axios.get(API_BASE_URL + '/get-blog-by-author/'+idCrypt);
-                this.blogs = response.data.data
+                this.blogs = response.data.data.filter(blog => blog.status === 1);
                 this.totalPages = response.data.last_page;
                 this.currentPage = response.data.current_page;                
             } catch (error) {
