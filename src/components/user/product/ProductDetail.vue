@@ -49,6 +49,8 @@
 
                 <div class="col-md-6 col-lg-5 p-b-30"   >
                     <div class="p-r-50 p-t-5 p-lr-0-lg">
+                        <h4 id="product-name" class="mtext-105 cl2 js-name-detail p-b-14"></h4>
+                        <span id="product-price" class="mtext-106 cl2"></span>
                         <h4 class="mtext-105 cl2 js-name-detail p-b-14">
                         </h4>
 
@@ -59,7 +61,6 @@
                             Nulla eget sem vitae eros pharetra viverra. Nam vitae luctus ligula. Mauris consequat ornare
                             feugiat.
                         </p>
-
                         <!--  -->
                         <div class="p-t-33">
                             <div class="flex-w flex-r-m p-b-10">
@@ -167,7 +168,9 @@
 
                     <div class="tab-content p-t-43">
                         <div class="tab-pane active" id="description">
-                            <!-- Nội dung tab Description -->
+                            <div class="how-pos2 p-lr-15-md">
+								<p id="product-description"></p>
+							</div>
                         </div>
                         <div class="tab-pane" id="information">
                             <!-- Nội dung tab Information -->
@@ -314,3 +317,28 @@ export default {
     border-radius: 11px;
 }
 </style>
+
+<script>
+const productId = new URLSearchParams(window.location.search).get('id');
+console.log(productId);
+
+if (productId) {
+    // Fetch product details using the product ID
+    fetch(`http://localhost:8000/api/getProductbyID/${productId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Use the fetched data to display product details on the page
+            document.getElementById('product-name').textContent = data.name || 'N/A';
+            document.getElementById('product-price').textContent = `$${data.price.toFixed(2)}` || 'N/A';
+            document.getElementById('product-description').textContent = data.desc || 'No description available.';
+        })
+        .catch(error => console.error('Error fetching product:', error));
+} else {
+    console.error('Product ID not found in the URL.');
+}
+</script>
