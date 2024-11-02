@@ -209,10 +209,8 @@ export default {
     async logout() {
       // Hiện thông báo xác nhận
       const confirmLogout = window.confirm('Bạn có muốn thoát không?');
-
-      // Nếu người dùng không xác nhận, thoát ra
       if (!confirmLogout) {
-        return; // Không làm gì cả nếu người dùng nhấn "Cancel"
+        return;
       }
 
       try {
@@ -222,7 +220,7 @@ export default {
             'Content-Type': 'application/json',
           },
         });
-
+        this.$store.commit('setUserRole', null);
         this.$router.push({ name: 'login' });
       } catch (error) {
         console.error('Error during logout:', error.response ? error.response.data : error.message);
