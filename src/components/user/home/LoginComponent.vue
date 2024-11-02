@@ -84,17 +84,15 @@ export default {
                     withCredentials: true 
                 });
 
-                const data = response
-                console.log(data)
-
-                if (data) {
+                if (response) {
+                    this.$store.commit('setUserRole', response.data.user.role); 
+                    console.log("Role",this.$store.state.userRole);
+                    
                     this.$router.push('/');
                 }
                 else {
                     console.log('that bai')
                 }
-                // Kiểm tra token và thông báo lỗi nếu có
-
             } catch (error) {
                 console.error('Error:', error);
                 this.emailError = 'An error occurred. Please try again later.';
