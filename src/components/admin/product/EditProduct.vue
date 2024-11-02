@@ -204,6 +204,7 @@ export default {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
+                withCredentials: true,
                 data: formData,
                 onUploadProgress: (progressEvent) => {
                     this.loadingPercentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
