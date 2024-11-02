@@ -1,11 +1,10 @@
 <template>
-  <TheHeader :userAuth="userAuth" />
+  <TheHeader />
   <Cart />
   <Slider />
   <HomeBanner />
   <HomeNewProducts />
   <HomeAllProducts />
-  <HomeAllProducts :userAuth="userAuth" />
   <TheFooter />
   <ProductModal />
   <router-view></router-view>
@@ -85,10 +84,5 @@ export default {
   created() {
     this.fetchUser();
   },
-  watch() {
-    if (!this.userAuth) {
-      localStorage.removeItem('user');
-    }
-  }
 }
 </script>

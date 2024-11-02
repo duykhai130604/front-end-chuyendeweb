@@ -91,6 +91,14 @@
             </div>
           </div>
         </div>
+        <div class="flex-c-m flex-w w-full p-t-45" v-if="hasMoreSProducts && !loadingS">
+      <button @click="loadMoreS" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+        Load More
+      </button>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div v-if="loading">Loading...</div>
       </div>
 
 
@@ -878,8 +886,11 @@ export default {
       user: null,
       currentPage: 1,
       loading: false,
+      loadingS: false,
       hasMoreProducts: true,
+      hasMoreSProducts: true,
       sps: [],
+      page: 1,
     };
   },
   props: ['userAuth'],
@@ -894,17 +905,29 @@ export default {
     },
     async fetchSProducts() {
       try {
-        const response = await axios.get(`${API_BASE_URL}/top-products-user-not`,
+        this.loadingS = true;
+        const response = await axios.get(
+          `${API_BASE_URL}/top-products-user-not`,
           {
+            params: { page: this.page },
             withCredentials: true,
             headers: {
               'Content-Type': 'application/json'
             }
           }
         );
-        this.sps = response.data.data;
+
+        const newProducts = response.data.data;
+        
+        if (newProducts.length < 4) { 
+          this.hasMoreSProducts = false;
+        }
+        
+        this.sps = [...this.sps, ...newProducts];
       } catch (error) {
         console.error('Error fetching top products:', error);
+      } finally {
+        this.loadingS = false;
       }
     },
     async fetchProductsByUser() {
@@ -971,6 +994,10 @@ export default {
       } else {
         this.fetchTopProducts();
       }
+    },
+    loadMoreS() {
+      this.page += 1;
+      this.fetchSProducts();
     }
   },
   created() {
