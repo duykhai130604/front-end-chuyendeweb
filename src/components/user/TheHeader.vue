@@ -13,12 +13,15 @@
             <a href="#" class="flex-c-m trans-04 p-lr-25"> Help & FAQs </a>
             <a href="#" class="flex-c-m trans-04 p-lr-25"> EN </a>
             <a href="#" class="flex-c-m trans-04 p-lr-25"> USD </a>
-            <button style="color: aliceblue;" class="flex-c-m trans-04 p-lr-25" v-if="userAuth" @click="logout">Logout</button>
-            <a href="#" class="flex-c-m p-lr-10 trans-04" v-else>Log in</a>
-            <a href="#" class="flex-c-m trans-04 p-lr-25" v-if="userAuth">{{ userAuth.name }} </a>
+            <button style="color: aliceblue;" class="flex-c-m trans-04 p-lr-25" v-if="userAuth"
+              @click="logout">Logout</button>
+            <router-link to="/login" class="flex-c-m p-lr-10 trans-04" v-else>Log in</router-link>
+            <a href="#" class="flex-c-m trans-04 p-lr-25" v-if="userAuth">{{ userAuth }} </a>
           </div>
         </div>
       </div>
+
+
 
       <div class="wrap-menu-desktop">
         <nav class="limiter-menu-desktop container">
@@ -67,10 +70,12 @@
               <i class="zmdi zmdi-search"></i>
             </div>
 
-            <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti js-show-cart"
-              data-notify="2">
-              <i class="zmdi zmdi-shopping-cart"></i>
-            </div>
+            <router-link to="/cart">
+              <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti js-show-cart"
+                data-notify="2">
+                <i class="zmdi zmdi-shopping-cart"></i>
+              </div>
+            </router-link>
 
             <a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti"
               data-notify="0">
@@ -126,10 +131,11 @@
             <a href="#" class="flex-c-m p-lr-10 trans-04"> Help & FAQs </a>
 
             <a href="#" class="flex-c-m p-lr-10 trans-04"> My Account </a>
+            
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">Log out</a>
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-else>Log in</a>
 
-            <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">{{ userAuth.name }} </a>
+            <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">{{ userAuth }} </a>
 
             <a href="#" class="flex-c-m p-lr-10 trans-04"> EN </a>
 
@@ -194,40 +200,35 @@
 import axios from 'axios';
 import { API_BASE_URL } from '@/utils/config';
 export default {
-  props: ['userAuth'],
+  data() {
+    return {
+      userAuth: []
+    };
+  },
   methods: {
     async logout() {
       // Hiện thông báo xác nhận
       const confirmLogout = window.confirm('Bạn có muốn thoát không?');
-
-      // Nếu người dùng không xác nhận, thoát ra
       if (!confirmLogout) {
-        return; // Không làm gì cả nếu người dùng nhấn "Cancel"
+        return;
       }
 
       try {
-        const token = localStorage.getItem('token');
-
-        // Kiểm tra token trước khi gửi yêu cầu
-        if (!token) {
-          console.warn('No token found, user is already logged out.');
-          this.$router.push({ name: 'login' });
-          return;
-        }
-        // Gửi yêu cầu logout tới API
-        await axios.post(API_BASE_URL+'/logout');
-
-        // Xóa token khỏi local storage
-        localStorage.removeItem('token');
-
-        // Chuyển hướng đến trang login
+        await axios.post(`${API_BASE_URL}/logout`, null, {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        this.$store.commit('setUserRole', null);
         this.$router.push({ name: 'login' });
       } catch (error) {
         console.error('Error during logout:', error.response ? error.response.data : error.message);
-        // Bạn có thể hiển thị thông báo cho người dùng nếu cần
       }
     }
-
+  },
+  created() {
+    this.userAuth = localStorage.getItem('user') ?? null;
   }
 }
 </script>

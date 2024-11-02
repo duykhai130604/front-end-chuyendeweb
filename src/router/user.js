@@ -18,14 +18,18 @@ const home = [
         component: () => import("../views/user/RegisterView.vue"),
     },
     {
+        path: "/cart",
+        component: () => import("../views/user/cart/CartView.vue"),
+        meta: { requiresAuth: true }
+    },
+    {
         path: "/reset",
         component: () => import("../views/user/ResetView.vue"),
     },
-  {
-  
+    {
         path: "/blogs",
         component: () => import("../views/user/blog/ListBlogsView.vue"),
-        name:"blogs"
+        name: "blogs"
     },
     {
         path: "/product/:id",
@@ -33,4 +37,5 @@ const home = [
         name:"product"
     },
 ];
+
 export default home;

@@ -46,6 +46,7 @@
                                                                 {{ category.name }}
                                                             </label>
                                                         </div>
+                                                        <ErrorMessage :errorMessage="errors.categories" />
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
@@ -61,7 +62,6 @@
                                                     <ErrorMessage :errorMessage="errors.image" />
                                                 </div>
                                             </div>
-                                            <ErrorMessage :errorMessage="errors.categories" />
                                             <LabelComponent for="description" text="Description" />
                                             <CKEditorComponent v-model="productData.desc" />
                                             <ErrorMessage :errorMessage="errors.desc" />
@@ -204,6 +204,7 @@ export default {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
+                withCredentials: true,
                 data: formData,
                 onUploadProgress: (progressEvent) => {
                     this.loadingPercentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);

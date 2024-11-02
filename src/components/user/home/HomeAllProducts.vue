@@ -39,21 +39,21 @@
             </div>
           </div>
           <!-- Load more -->
-          <div id="app" v-if="hasMoreProducts">
+          <div id="app">
             <div v-for="product in products" :key="product.id" class="product-item">
               <!-- Hiển thị thông tin sản phẩm -->
               <p>{{ product.name }}</p>
             </div>
         </div>
 
-          <div class="flex-c-m flex-w w-full p-t-45">
-            <button @click="loadMore" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-              Load More
-            </button>
-          </div>
+      </div>
+      <div class="flex-c-m flex-w w-full p-t-45" v-if="hasMoreProducts">
+        <button @click="loadMore" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+          Load More
+        </button>
+      </div>
 
-          <div v-if="loading">Loading...</div>
-        </div>
+      <div v-if="loading">Loading...</div>
 
       </div>
       <div class="p-b-10 my-5" v-if="sps">
@@ -914,7 +914,9 @@ export default {
           headers: {
             'Content-Type': 'application/json'
           }
+          
         });
+        console.log('có user');
         this.topProducts = response.data.data;
       } catch (error) {
         console.error('Error fetching products by user:', error);
@@ -973,6 +975,7 @@ export default {
   },
   created() {
     this.checkUser();
+    this.fetchSProducts();
   },
   watch: {
     userAuth(newValue, oldValue) {

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { CkeditorPlugin } from '@ckeditor/ckeditor5-vue';
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css'; 
-
+import store from '@/utils/store';
 const app = createApp(App);
 
 app.config.warnHandler = function () {
@@ -15,6 +15,7 @@ app.config.globalProperties.$axios = axios;
 
 
 app.use(router);
+app.use(store);
 app.use(CkeditorPlugin);
 app.use(Toast, {
     transition: "Vue-Toastification__bounce",
