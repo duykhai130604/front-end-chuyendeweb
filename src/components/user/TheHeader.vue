@@ -16,7 +16,7 @@
             <button style="color: aliceblue;" class="flex-c-m trans-04 p-lr-25" v-if="userAuth"
               @click="logout">Logout</button>
             <router-link to="/login" class="flex-c-m p-lr-10 trans-04" v-else>Log in</router-link>
-            <a href="#" class="flex-c-m trans-04 p-lr-25" v-if="userAuth">{{ userAuth }} </a>
+            <a href="#" class="flex-c-m trans-04 p-lr-25" v-if="userAuth">{{ userAuth.name }} </a>
           </div>
         </div>
       </div>
@@ -135,7 +135,7 @@
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">Log out</a>
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-else>Log in</a>
 
-            <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">{{ userAuth }} </a>
+            <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">{{ userAuth.name }} </a>
 
             <a href="#" class="flex-c-m p-lr-10 trans-04"> EN </a>
 
@@ -202,7 +202,7 @@ import { API_BASE_URL } from '@/utils/config';
 export default {
   data() {
     return {
-      userAuth: []
+      userAuth: null
     };
   },
   methods: {
@@ -225,10 +225,29 @@ export default {
       } catch (error) {
         console.error('Error during logout:', error.response ? error.response.data : error.message);
       }
+    },
+    async fetchUser() {
+      try {
+        const re = await axios.get(API_BASE_URL + '/me', {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        this.userAuth = re.data;
+      } catch (error) {
+        console.log('nothing to show');
+      }
     }
   },
   created() {
-    this.userAuth = localStorage.getItem('user') ?? null;
+    this.fetchUser();
+    this.$store.watch(
+      (state) => state.userRole,
+      (newUserRole) => {
+        this.userAuth = newUserRole;
+      }
+    );
   }
 }
 </script>
