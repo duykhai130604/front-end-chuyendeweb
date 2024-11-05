@@ -8,8 +8,7 @@
                             <div class="wrap-slick3-dots"></div>
                             <div class="wrap-slick3-arrows flex-sb-m flex-w"></div>
                             <div class="slick3 gallery-lb">
-                                <div class="item-slick3" v-for="image in product.images" :key="image"
-                                    :data-thumb="image">
+                                <div class="item-slick3" v-for="image in imgs" :key="image" :data-thumb="image">
                                     <div class="wrap-pic-w pos-relative">
                                         <img :src="image" alt="IMG-PRODUCT">
                                         <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
@@ -25,9 +24,38 @@
                 <div class="col-md-6 col-lg-5 p-b-30">
                     <div class="p-r-50 p-t-5 p-lr-0-lg">
                         <h4 class="mtext-105 cl2 js-name-detail p-b-14">{{ product.name || 'N/A' }}</h4>
-                        <span class="mtext-106 cl2">{{ product.price ? `$${product.price.toFixed(2)}` : 'N/A' }}</span>
-                        <p class="stext-102 cl3 p-t-23"></p>
-                        <!-- Product options like size and color, and add to cart button -->
+                        <span class="mtext-106 cl2" :class="{ 'old-price': product.discount > 0 }">{{ product.price ? `${product.price.toFixed(2)}` : 'N/A'
+                            }}VND</span>
+                        <div class="discount" v-if="product.discount > 0"> <span>-{{ product.discount }}%</span></div>
+                        <p class="mtext-105 cl2 p-t-23">{{ primaryPrice }} VND</p>
+                        <div id="product-options">
+                            <!-- Chọn màu sắc -->
+                            <div>
+                                <label for="color">Chọn màu sắc:</label>
+                                <div id="color-options">
+                                    <button v-for="color in colors" :key="color" class="color-button"
+                                        :class="{ selected: selectedColor === color }" @click="selectColor(color)"
+                                        :style="{ background: color }">
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Chọn kích cỡ -->
+                            <div>
+                                <label for="size">Chọn kích cỡ:</label>
+                                <div id="size-options">
+                                    <button v-for="size in sizes" :key="size" class="size-button"
+                                        :class="{ selected: selectedSize === size }" @click="selectSize(size)">
+                                        {{ size }}
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="remaining-products">
+                                <span>Số lượng: {{ quantity }}</span>
+
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -78,6 +106,15 @@ export default {
             productId: null,
             product: {},
             similarProducts: [],
+            sizes: [],
+            colors: [],
+            imgs: [],
+            variants: [],
+            selectedSize: null,
+            selectedColor: null,
+            quantity: null,
+            primaryPrice: null,
+
         };
     },
     methods: {
@@ -91,21 +128,58 @@ export default {
                     }
                 });
                 this.product = response.data;
-                console.log(response.data);
-
+             if (response.data.discount!=0){
+                this.primaryPrice = response.data.price - (response.data.price * response.data.discount) / 100;
+             }
+                const variants = await axios.get(`${API_BASE_URL}/product/variants/${this.productId}`);
+                this.variants = variants.data; 
+                this.sizes = [...new Set(variants.data.map(variant => variant.size))];
+                this.colors = [...new Set(variants.data.map(variant => variant.color))];
+                this.imgs = variants.data.map(variant => variant.url);
             } catch (error) {
                 console.error('Error fetching product:', error);
             }
         },
         setActiveTab(tabId) {
             this.activeTab = tabId;
+        },
+        selectSize(size) {
+            if (this.selectedSize === size) {
+                this.selectedSize = null;
+                console.log("Kích cỡ đã hủy chọn");
+                this.quantity = null; 
+            } else {
+                this.selectedSize = size;
+                console.log("Kích cỡ đã chọn:", this.selectedSize);
+                this.updateQuantity(); 
+            }
+        },
+        selectColor(color) {
+            if (this.selectedColor === color) {
+                this.selectedColor = null;
+                console.log("Màu sắc đã hủy chọn");
+                this.quantity = null; 
+            } else {
+                this.selectedColor = color;
+                console.log("Màu sắc đã chọn:", this.selectedColor);
+                this.updateQuantity(); 
+            }
+        },
+        updateQuantity() {
+            const selectedVariant = this.variants.find(variant =>
+                variant.size === this.selectedSize && variant.color === this.selectedColor
+            );
+            this.quantity = selectedVariant ? selectedVariant.quantity : null; 
+            console.log("Số lượng hiện tại:", this.quantity);
         }
-
     },
     created() {
         this.fetchProductDetails();
     }
 };
+
+
+
 </script>
 
 <style scoped>
@@ -165,5 +239,53 @@ export default {
 
 .tab-pane.active {
     display: block;
+}
+
+.size-button {
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.size-button.selected {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.color-button {
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: box-shadow 0.3s ease;
+}
+
+.color-button.selected {
+    color: #fff;
+    border: 2px solid rgba(53, 242, 255, 0.5);
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgb(2, 69, 239);
+}
+
+.old-price {
+    text-decoration: line-through;
+}
+
+.discount {
+    display: inline-flex;
+    width: 50px;
+    height: 50px;
+    background-color: red;
+    color: yellow;
+    border-radius: 50%;
+    margin:auto 0;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: bold;
+    margin: 0 15px;
 }
 </style>
