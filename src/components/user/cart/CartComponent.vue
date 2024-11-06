@@ -20,7 +20,7 @@
                                     <tr class="table_row" v-for="(item, index) in cartItems" :key="index">
                                         <td class="column-1">
                                             <div class="itemcart1">
-                                                <img class="image-cart" :src="item.product_thumbnail" alt="IMG">
+                                                <img :src="item.product_thumbnail" alt="Product Image" class="image-cart">
                                             </div>
                                         </td>
                                         <td class="column-2">{{ item.product_name }}<br />{{ item.size_name }}</td>
@@ -31,18 +31,15 @@
                                                     @click="decreaseQuantity(index)">
                                                     <i class="fs-16 zmdi zmdi-minus"></i>
                                                 </div>
-
                                                 <input class="mtext-104 cl3 txt-center num-product" type="number"
                                                     v-model.number="item.variant_quantity" min="1" max="20" readonly>
-
                                                 <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m"
                                                     @click="increaseQuantity(index)">
                                                     <i class="fs-16 zmdi zmdi-plus"></i>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="column-5">{{ formatCurrency(item.product_price *
-                                            item.variant_quantity) }}</td>
+                                        <td class="column-5">{{ formatCurrency(item.product_price * item.variant_quantity) }}</td>
                                         <td class="column-6">
                                             <ButtonComponent class="btn-danger" icon="fa fa-times"
                                                 @click="removeItem(item.variant_id)" />
@@ -51,63 +48,36 @@
                                 </tbody>
                             </table>
                         </div>
-
                         <div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
                             <div class="flex-w flex-m m-r-20 m-tb-5">
                                 <input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text"
                                     name="coupon" placeholder="Mã giảm giá">
-                                <div
-                                    class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5">
+                                <div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5">
                                     Thêm mã giảm giá
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
                 <div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
                     <div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
                         <h4 class="mtext-109 cl2 p-b-30">
                             Total cart
                         </h4>
-
                         <div class="flex-w flex-t bor12 p-b-13">
                             <div class="size-208">
-                                <span class="stext-110 cl2">
-                                    Subtotal:
-                                </span>
+                                <span class="stext-110 cl2">Subtotal:</span>
                             </div>
-
                             <div class="size-209">
-                                <span class="mtext-110 cl2">
-                                    {{ formatCurrency(subtotal) }}
-                                </span>
+                                <span class="mtext-110 cl2">{{ formatCurrency(subtotal) }}</span>
                             </div>
                         </div>
-                        <div class="flex-w flex-t bor12 p-t-15 p-b-30">
-                            <div class="size-208 w-full-ssm">
-                                <span class="stext-110 cl2">
-                                    Phone Number:
-                                </span>
-                            </div>
-                            <div class="size-209 p-r-18 p-r-0-sm w-full-ssm">
-                                <input type="number" class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5"
-                                    placeholder="Số điện thoại"  pattern="[0-9]*"  />
-                            </div>
-                        </div>
-                        <div class="flex-w flex-t bor12 p-t-15 p-b-30">
-                            <div class="size-208 w-full-ssm">
-                                <span class="stext-110 cl2">
-                                    Address:
-                                </span>
-                            </div>
-                            <div class="size-209 p-r-18 p-r-0-sm w-full-ssm">
-                                <textarea class="addresss text-111 cl6 p-t-2" name="" id="" rows="5"></textarea>
-                            </div>
-                        </div>
-                        <button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
-                            Thanh toán
-                        </button>
+                        <router-link to="/checkout">
+                            <button @click="handlePayment"
+                                class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
+                                Thanh toán
+                            </button>
+                        </router-link>
                     </div>
                 </div>
             </div>
@@ -122,11 +92,14 @@
 import ButtonComponent from '../../common/ButtonComponent.vue';
 import axios from 'axios';
 import { API_BASE_URL } from '@/utils/config';
+
 export default {
     components: { ButtonComponent },
     data() {
         return {
-            cartItems: []
+            cartItems: [],
+            phone: '',
+            address: ''
         }
     },
     computed: {
@@ -138,29 +111,25 @@ export default {
         increaseQuantity(index) {
             if (this.cartItems[index].variant_quantity < 20) {
                 this.cartItems[index].variant_quantity++;
-                this.updateQuantity(this.cartItems[index]); // Gọi hàm cập nhật số lượng
+                this.updateQuantity(this.cartItems[index]);
             }
         },
         decreaseQuantity(index) {
             if (this.cartItems[index].variant_quantity > 1) {
                 this.cartItems[index].variant_quantity--;
-                this.updateQuantity(this.cartItems[index]); // Gọi hàm cập nhật số lượng
+                this.updateQuantity(this.cartItems[index]);
             }
         },
         updateQuantity(item) {
-            // Gửi yêu cầu cập nhật số lượng tới server
             axios.put(`${API_BASE_URL}/updateCartItem`, {
                 variant_id: item.variant_id,
                 quantity: item.variant_quantity
             }, { withCredentials: true })
                 .then((response) => {
                     console.log(response.data.message);
-                    // Có thể thêm thông báo cho người dùng nếu cần
                 })
                 .catch((error) => {
                     console.error(error.response.data.error);
-                    // Thông báo lỗi cho người dùng
-                    alert("Có lỗi xảy ra khi cập nhật số lượng. Vui lòng thử lại.");
                 });
         },
         formatCurrency(value) {
@@ -169,44 +138,32 @@ export default {
         removeItem(variant_id) {
             axios.delete(`${API_BASE_URL}/deleteCartItem`, { data: { variant_id: variant_id }, withCredentials: true })
                 .then((response) => {
-                    // Cập nhật giỏ hàng sau khi xóa thành công
                     this.cartItems = this.cartItems.filter(item => item.variant_id !== variant_id);
                     console.log(response.data.message);
-                    // Có thể thêm thông báo cho người dùng
-                    alert("Sản phẩm đã được xóa khỏi giỏ hàng.");
                 })
                 .catch((error) => {
                     console.error(error.response.data.error);
-                    // Thông báo lỗi cho người dùng
-                    alert("Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.");
                 });
-            console.log(variant_id);
-
         },
-
         fetchCartItems() {
-            const config = {
-                method: 'get',
-                withCredentials: true,
-                url: API_BASE_URL + '/getCarts',
-            };
-
-            axios.request(config)
+            axios.get(`${API_BASE_URL}/getCarts`, { withCredentials: true })
                 .then((response) => {
                     this.cartItems = response.data.cart;
                 })
                 .catch((error) => {
                     console.log(error);
                 });
+        },
+        handlePayment() {
+            console.log("Số điện thoại:", this.phone);
+            console.log("Địa chỉ:", this.address);
         }
     },
-
     mounted() {
         this.fetchCartItems();
     }
 }
 </script>
-
 <style scoped>
 .addresss {
     border: 1px solid darkgray;
@@ -229,12 +186,6 @@ export default {
     text-align: center;
     padding: 15px;
     border-bottom: 1px solid #e6e6e6;
-}
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none; 
-    margin: 0;
 }
 
 .column-1 {

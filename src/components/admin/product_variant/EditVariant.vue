@@ -80,6 +80,8 @@
         </div>
       </div>
       <FooterComponent />
+      <LoadingOverlay :isLoading="isLoading" />
+
     </div>
   </div>
 </template>
@@ -89,6 +91,7 @@ import SideBarComponent from "../SideBarComponent.vue";
 import NavbarComponent from "../NavbarComponent.vue";
 import HeaderComponent from "../HeaderComponent.vue";
 import FooterComponent from "../FooterComponent.vue";
+import LoadingOverlay from '@/components/common/LoadingOverlayComponent.vue';
 import axios from "axios";
 import { useToast } from "vue-toastification";
 import { API_BASE_URL } from '@/utils/config';
@@ -100,6 +103,7 @@ export default {
     NavbarComponent,
     HeaderComponent,
     FooterComponent,
+    LoadingOverlay,
   },
   data() {
     return {
@@ -133,6 +137,11 @@ export default {
     loadVariantData() {
       axios.get(`${API_BASE_URL}/getVariantByVariantId?variant_id=${this.$route.params.id}`)
         .then(response => {
+          if (response.data.status === "error") {
+            this.toast.error(response.data.message || "Product variant not found.");
+            this.goBack();
+            return;
+          }
           const data = response.data.variant;
           this.variantData = {
             id: data.id,
@@ -178,6 +187,7 @@ export default {
       formData.append('size_id', this.variantData.size_id);
       formData.append('quantity', this.variantData.quantity);
       formData.append('status', 1);
+      this.isLoading = true;
       if (this.variantData.images.length > 0) {
         this.variantData.images.forEach((image) => {
           formData.append('images[]', image);
@@ -197,12 +207,14 @@ export default {
           }
         })
         .catch((error) => {
-          // Kiểm tra nếu có phản hồi từ server
           if (error.response) {
             if (error.response.status === 409) {
               this.toast.error(error.response.data.message);
             }
           }
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
     handleFileUpload(event) {

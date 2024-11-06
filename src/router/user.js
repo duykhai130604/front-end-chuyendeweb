@@ -23,6 +23,11 @@ const home = [
         meta: { requiresAuth: true }
     },
     {
+        path: "/checkout",
+        component: () => import("../views/user/checkout/CheckoutView.vue"),
+        meta: { requiresAuth: true }
+    },
+    {
         path: "/reset",
         component: () => import("../views/user/ResetView.vue"),
     },
