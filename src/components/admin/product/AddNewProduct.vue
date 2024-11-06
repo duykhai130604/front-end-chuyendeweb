@@ -66,7 +66,7 @@
                 </div>
             </div>
             <FooterComponent />
-            <LoadingOverlay :isLoading="isLoading" :loadingPercentage="loadingPercentage" />
+            <LoadingOverlay :isLoading="isLoading"/>
         </div>
     </div>
 </template>
@@ -119,7 +119,6 @@ export default {
             categories: [],
             errors: {},
             isLoading: false,
-            loadingPercentage: 0
         };
     },
     methods: {
@@ -131,8 +130,6 @@ export default {
         submitProduct() {
             if (this.isLoading) return;
             this.isLoading = true;
-            this.loadingPercentage = 0;
-
             const formData = new FormData();
             formData.append('name', this.productData.name);
             formData.append('price', this.productData.price);
@@ -150,9 +147,6 @@ export default {
 
             const config = {
                 headers: { 'Content-Type': 'multipart/form-data' },
-                onUploadProgress: (progressEvent) => {
-                    this.loadingPercentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                }
             };
 
             axios.post(`${API_BASE_URL}/admin/addProduct`, formData, config)

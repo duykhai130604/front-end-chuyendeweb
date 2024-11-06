@@ -12,8 +12,7 @@ app.config.warnHandler = function () {
     return null;
 };
 app.config.globalProperties.$axios = axios;
-
-
+  
 app.use(router);
 app.use(store);
 app.use(CkeditorPlugin);

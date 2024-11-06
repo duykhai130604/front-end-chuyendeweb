@@ -186,13 +186,7 @@ export default {
                 })
                 .catch((error) => {
                     if (error.response && error.response.data) {
-                        this.toast.error(error.response.data.message || 'An unexpected error occurred.', {
-                            position: 'top-center',
-                            timeout: 1500,
-                            pauseOnHover: false,
-                        });
-                    } else {
-                        this.toast.error('An unexpected error occurred.', {
+                        this.toast.error(error.response.data.message, {
                             position: 'top-center',
                             timeout: 1500,
                             pauseOnHover: false,

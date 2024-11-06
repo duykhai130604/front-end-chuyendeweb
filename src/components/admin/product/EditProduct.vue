@@ -52,7 +52,8 @@
                                                 <div class="col-6">
                                                     <LabelComponent text="Thumbnail Old" />
                                                     <br>
-                                                    <img class="img-fluid image-old" alt="Thumbnail old" :src="thumbnailOld" />
+                                                    <img class="img-fluid image-old" alt="Thumbnail old"
+                                                        :src="thumbnailOld" />
                                                 </div>
                                                 <div class="col-6">
                                                     <LabelComponent text="Thumbnail" />
@@ -80,7 +81,7 @@
                 </div>
             </div>
             <FooterComponent />
-            <LoadingOverlay :isLoading="isLoading" :loadingPercentage="loadingPercentage" />
+            <LoadingOverlay :isLoading="isLoading" />
         </div>
     </div>
 </template>
@@ -133,7 +134,6 @@ export default {
             errors: {},
             message: '',
             isLoading: false,
-            loadingPercentage: 0,
             thumbnailOld: ''
         };
     },
@@ -159,13 +159,10 @@ export default {
             })
             .catch(error => {
                 if (error.response && error.response.status === 404) {
-                    this.message = error.response.data.message;
-                    setTimeout(() => {
-                        this.$router.push('/admin/products');
-                    }, 3000);
+                    this.toast.error(error.response.data.message);
+                    this.$router.push('/admin/products');
                 }
             });
-
         // Lấy tất cả danh mục
         axios.get(`${API_BASE_URL}/getAllCategories`)
             .then(response => {
@@ -183,7 +180,6 @@ export default {
         submitProduct() {
             if (this.isLoading) return;
             this.isLoading = true;
-            this.loadingPercentage = 0;
 
             const formData = new FormData();
             formData.append('id', this.productData.id);
@@ -206,9 +202,6 @@ export default {
                 },
                 withCredentials: true,
                 data: formData,
-                onUploadProgress: (progressEvent) => {
-                    this.loadingPercentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                }
             };
 
             axios.request(config)

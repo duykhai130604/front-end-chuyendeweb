@@ -14,7 +14,7 @@
                                 <div class="card-title">Add new variant</div>
                             </div>
                             <div class="card-body">
-                                <LoadingOverlay :isLoading="isLoading" :loadingPercentage="loadingPercentage" />
+                                <LoadingOverlay :isLoading="isLoading"/>
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-6">
@@ -104,7 +104,6 @@ export default {
             },
             errors: {},
             isLoading: false,
-            loadingPercentage: 0
         };
     },
     setup() {
@@ -158,7 +157,6 @@ export default {
         submitForm() {
             this.errors = {};
             this.isLoading = true;
-            this.loadingPercentage = 0;
 
             const data = new FormData();
             data.append('product_id', this.productData.product_id);
@@ -173,9 +171,6 @@ export default {
 
             axios.post(`${API_BASE_URL}/admin/addProductVariant`, data, {
                 headers: { 'Content-Type': 'multipart/form-data' },
-                onUploadProgress: progressEvent => {
-                    this.loadingPercentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                }
             })
                 .then(response => {
                     this.toast.success(response.data.message || 'Variant added successfully');
@@ -197,7 +192,6 @@ export default {
                 })
                 .finally(() => {
                     this.isLoading = false;
-                    this.loadingPercentage = 0;
                 });
         },
         resetForm() {
