@@ -96,20 +96,32 @@
                                     Các tác giả nổi bật
                                 </h4>
                                 <ul>
-                                    <div @click="fetchBlogs()"
-                                           :active="txt-color" :class="{'text-color': selectedAuthorId === null, 'dis-block': true}">
-                                          <h3> Tất cả</h3>
-                                           
-                                        </div>
+                                    <div @click="fetchBlogs()" :active="txt - color"
+                                        :class="{ 'text-color': selectedAuthorId === null, 'dis-block': true }">
+                                        <h3> Tất cả</h3>
+                                    </div>
                                     <li class="bor18" v-for="author in authors" :key="author.id">
-                                        <div @click="getBlogsByAuthor(author.id)"
-                                           :active="txt-color" :class="{'text-color': selectedAuthorId === author.id, 'dis-block': true, 'stext-115': true, 'cl6': true, 'hov-cl1': true, 'trans-04': true, 'p-tb-8': true, 'p-lr-4': true}">
-                                           >
+                                        <div @click="getBlogsByAuthor(author.id)" :active="txt - color" :class="{
+                                            'text-color': selectedAuthorId === author.id,
+                                            'dis-block': true,
+                                            'stext-115': true,
+                                            'cl6': true,
+                                            'hov-cl1': true,
+                                            'trans-04': true,
+                                            'p-tb-8': true,
+                                            'p-lr-4': true
+                                        }">
                                             {{ author.name }} ({{ author.blog_count }})
                                         </div>
                                     </li>
                                 </ul>
+
+                                <!-- Load More Button -->
+                                <div v-if="hasMoreAuthors" class="text-center">
+                                    <button @click="loadMoreAuthors" class="btn btn-primary">Load More</button>
+                                </div>
                             </div>
+
 
                             <div class="p-t-65">
                                 <h4 class="mtext-112 cl2 p-b-33">
@@ -321,6 +333,8 @@ export default {
             totalPages: 0,
             authors: [],
             selectedAuthorId: null,
+            page: 1,            // Current page number
+            hasMoreAuthors: true,  // Flag to show/hide 'Load More' button
 
         };
     },
@@ -332,7 +346,7 @@ export default {
     methods: {
         async fetchBlogs(page = 1) {
             try {
-                this.selectedAuthorId=null;
+                this.selectedAuthorId = null;
                 const response = await axios.get(API_BASE_URL + '/user-blogs?page=' + page);
                 this.blogs = response.data.data.filter(blog => blog.status === 1);
                 this.totalPages = response.data.last_page;
@@ -343,9 +357,9 @@ export default {
         },
         async fetchAuthors() {
             try {
-                const response = await axios.get(API_BASE_URL + '/authors-count-blog');
+                const response = await axios.get(API_BASE_URL + '/authors-count-blog?page=1');
 
-                this.authors = response.data;
+                this.authors = response.data.data;
 
             } catch (error) {
                 console.error('Lỗi khi lấy blogs:', error);
@@ -380,15 +394,33 @@ export default {
                 this.selectedAuthorId = id;
                 const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
                 const idCrypt = encryptResponse.data.encrypted_id;
-                const response = await axios.get(API_BASE_URL + '/get-blog-by-author/'+idCrypt);
+                const response = await axios.get(API_BASE_URL + '/get-blog-by-author/' + idCrypt);                
                 this.blogs = response.data.data.filter(blog => blog.status === 1);
                 this.totalPages = response.data.last_page;
-                this.currentPage = response.data.current_page;                
+                this.currentPage = response.data.current_page;
             } catch (error) {
                 console.error('Lỗi khi lấy blogs:', error);
             }
-        }
+        },
+        async loadMoreAuthors() {
+        try {
+            this.page++;
+            const response = await axios.get(`${API_BASE_URL}/authors-count-blog?page=${this.page}`);
+            const newAuthors = response.data.data;
 
+            if (newAuthors.length >0) {
+                const newAuthorsFiltered = newAuthors.filter(newAuthor => 
+                    !this.authors.some(existingAuthor => existingAuthor.id === newAuthor.id)
+                );
+                  // Increment the page number
+                this.authors = [...this.authors, ...newAuthorsFiltered];  // Append new authors
+            } else {
+                this.hasMoreAuthors = false;  // No more authors to load
+            }
+        } catch (error) {
+            console.error('Error loading more authors:', error);
+        }
+    },
     },
     mounted() {
         this.fetchBlogs();
@@ -417,7 +449,8 @@ export default {
     color: black;
     font-weight: bold;
 }
-.text-color{
+
+.text-color {
     color: aqua;
 }
 </style>
