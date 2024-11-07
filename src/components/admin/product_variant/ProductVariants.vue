@@ -78,6 +78,7 @@
                 </div>
             </div>
             <FooterComponent />
+            <LoadingOverlay :isLoading="isLoading" />
         </div>
     </div>
 </template>
@@ -89,6 +90,7 @@ import HeaderComponent from '../HeaderComponent.vue';
 import FooterComponent from '../FooterComponent.vue';
 import NavbarComponent from '../NavbarComponent.vue';
 import PaginationComponent from '../../common/PaginationComponent.vue';
+import LoadingOverlay from '@/components/common/LoadingOverlayComponent.vue';
 import ButtonComponent from "../../common/ButtonComponent.vue"
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
@@ -105,7 +107,8 @@ export default {
         FooterComponent,
         NavbarComponent,
         PaginationComponent,
-        ButtonComponent
+        ButtonComponent,
+        LoadingOverlay
     },
     data() {
         return {
@@ -117,6 +120,7 @@ export default {
             keyword: '',
             searchTimeout: null,
             productId: null,
+            isLoading: false
         };
     },
     mounted() {
@@ -125,6 +129,7 @@ export default {
     },
     methods: {
         fetchVariants(page = 1, keyword = '') {
+            this.isLoading = true;
             const config = {
                 method: 'get',
                 url: `${API_BASE_URL}/admin/productVariants`,
@@ -150,8 +155,12 @@ export default {
                     this.currentPage = page;
                 })
                 .catch((error) => {
-                    this.message = error.response?.data?.message || "An error occurred while fetching variants.";
+                    this.toast.error(error.response?.data?.message);
+                    this.$router.push("/admin/products");
                     this.totalPages = 0;
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
         },
 

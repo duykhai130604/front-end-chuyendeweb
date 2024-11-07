@@ -68,6 +68,7 @@
                 </div>
             </div>
             <FooterComponent />
+            <LoadingOverlay :isLoading="isLoading" />
         </div>
     </div>
 </template>
@@ -82,6 +83,7 @@ import PaginationComponent from '../../common/PaginationComponent.vue';
 import ButtonComponent from '../../common/ButtonComponent.vue';
 import axios from 'axios';
 import { useToast } from 'vue-toastification';
+import LoadingOverlay from '../../common/LoadingOverlayComponent.vue';
 
 export default {
     name: 'ProductList',
@@ -98,6 +100,7 @@ export default {
         NavbarComponent,
         PaginationComponent,
         ButtonComponent,
+        LoadingOverlay
     },
     data() {
         return {
@@ -109,6 +112,7 @@ export default {
             keyword: '',
             searchTimeout: null,
             isDeleting: false,
+            isLoading: false,
         };
     },
     mounted() {
@@ -116,6 +120,7 @@ export default {
     },
     methods: {
         fetchProducts(page = 1, keyword = '') {
+            this.isLoading =true;
             const config = {
                 method: 'get',
                 url: `${API_BASE_URL}/products?page=${page}&keyword=${keyword}`,
@@ -139,6 +144,9 @@ export default {
                 .catch((error) => {
                     console.error(error);
                     this.message = "An error occurred while fetching products.";
+                })
+                .finally(() => {
+                    this.isLoading = false;
                 });
         },
         handleSearch(keyword) {
@@ -147,7 +155,7 @@ export default {
 
             this.searchTimeout = setTimeout(() => {
                 this.fetchProducts(1, keyword);
-            }, 500);
+            }, 800);
         },
         changePage(page) {
             if (page < 1 || page > this.totalPages) return;
