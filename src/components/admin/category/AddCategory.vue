@@ -57,8 +57,8 @@ export default {
         },
         async getCategoriesByPage() {
             try {
-                const response = await axios.get(API_BASE_URL+'/categories');
-                this.categories = response.data.data;
+                const response = await axios.get(API_BASE_URL+'/getAllCategories');
+                this.categories = response.data;
                 this.parentCategories = this.categories.filter(category => category.parent_id === 0)
             } catch (error) {
                 console.error("There was an error fetching categories:", error);
