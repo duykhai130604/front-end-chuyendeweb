@@ -139,44 +139,52 @@ export default {
     },
     mounted() {
         const encodedId = this.$route.params.id;
-        axios.get(`${API_BASE_URL}/getProductDetails?encodedId=${encodedId}`)
-            .then(response => {
-                const product = response.data.product;
-                this.thumbnailOld = product.thumbnail;
-                this.productData = {
-                    id: encodedId,
-                    name: product.name,
-                    price: product.price,
-                    discount: product.discount,
-                    categories: product.categories || [],
-                    desc: product.desc
-                };
-
-                return axios.get(`${API_BASE_URL}/getCategoriesByProductId?encodeId=${encodedId}`);
-            })
-            .then(response => {
-                this.productData.categories = response.data.selectedCategories;
-            })
-            .catch(error => {
-                if (error.response && error.response.status === 404) {
-                    this.toast.error(error.response.data.message);
-                    this.$router.push('/admin/products');
-                }
-            });
-        // Lấy tất cả danh mục
-        axios.get(`${API_BASE_URL}/getAllCategories`)
-            .then(response => {
-                this.categories = response.data;
-            })
-            .catch(error => {
-                console.error("Error fetching categories:", error);
-            });
+        this.fetchProductDetails(encodedId);
+        this.fetchCategories();
     },
+
     methods: {
+        fetchProductDetails(encodedId) {
+            axios.get(`${API_BASE_URL}/getProductDetails?encodedId=${encodedId}`)
+                .then(response => {
+                    const product = response.data.product;
+                    this.thumbnailOld = product.thumbnail;
+                    this.productData = {
+                        id: encodedId,
+                        name: product.name,
+                        price: product.price,
+                        discount: product.discount,
+                        categories: product.categories || [],
+                        desc: product.desc
+                    };
+                    return axios.get(`${API_BASE_URL}/getCategoriesByProductId?encodeId=${encodedId}`);
+                })
+                .then(response => {
+                    this.productData.categories = response.data.selectedCategories;
+                })
+                .catch(error => {
+                    if (error.response && error.response.status === 404) {
+                        this.toast.error(error.response.data.message);
+                        this.$router.push('/admin/products');
+                    }
+                });
+        },
+
+        fetchCategories() {
+            axios.get(`${API_BASE_URL}/getAllCategories`)
+                .then(response => {
+                    this.categories = response.data;
+                })
+                .catch(error => {
+                    console.error("Error fetching categories:", error);
+                });
+        },
+
         handleFileUpload(event) {
             const file = event.target.files[0];
             this.productData.image = file ? file : null;
         },
+
         submitProduct() {
             if (this.isLoading) return;
             this.isLoading = true;
@@ -224,6 +232,7 @@ export default {
                 });
         },
     }
+
 
 }
 </script>

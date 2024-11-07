@@ -137,11 +137,6 @@ export default {
     loadVariantData() {
       axios.get(`${API_BASE_URL}/getVariantByVariantId?variant_id=${this.$route.params.id}`)
         .then(response => {
-          if (response.data.status === "error") {
-            this.toast.error(response.data.message || "Product variant not found.");
-            this.goBack();
-            return;
-          }
           const data = response.data.variant;
           this.variantData = {
             id: data.id,
@@ -153,13 +148,15 @@ export default {
           this.oldImages = data.images;
         })
         .catch(error => {
-          console.error(error);
-          this.toast.error('Failed to load variant data');
+          const errorMessage = error?.response?.data?.message;
+          this.toast.error(errorMessage);
+          this.$router.push('/admin/products');
         })
         .finally(() => {
           this.isLoading = false;
         });
-    },
+    }
+    ,
     loadSizes() {
       axios.get(`${API_BASE_URL}/getAllSizes`)
         .then(response => {
