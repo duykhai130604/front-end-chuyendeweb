@@ -41,6 +41,16 @@ const home = [
         component: () => import("../views/user/product/ProductDetailView.vue"),
         name:"product"
     },
+    {
+        path: "/history",
+        component: () => import("../views/user/user_order/UserOrderView.vue"),
+        name:"history"
+    },
+    {
+        path: "/review/:id/:variant/:order",
+        component: () => import("../views/user/review/AddReviewView.vue"),
+        name:"review"
+    },
 ];
 
 export default home;
