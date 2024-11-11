@@ -9,11 +9,19 @@
         </div>
 
         <div>
-            <textarea v-model="reviewText" placeholder="Nhập nội dung đánh giá..." rows="4" cols="50"></textarea>
+            <textarea v-model="reviewText" placeholder="Nhập nội dung đánh giá..." 
+                      :class="{'error': reviewText.length > 1000}" @input="checkLength"></textarea>
+        </div>
+        
+        <!-- Hiển thị thông báo lỗi khi ký tự vượt quá 1000 -->
+        <div v-if="reviewText.length > 1000" class="error-message">
+            <p>Vui lòng không nhập quá 1000 ký tự.</p>
         </div>
 
         <div>
-            <button @click="submitReview">Gửi đánh giá</button>
+            <button @click="submitReview" :disabled="reviewText.length > 1000 || selectedRating === 0 || reviewText.trim() === ''">
+                Gửi đánh giá
+            </button>
         </div>
     </div>
 </template>
@@ -21,6 +29,7 @@
 <script>
 import axios from 'axios';
 import { API_BASE_URL } from '@/utils/config';
+
 export default {
     data() {
         return {
@@ -35,6 +44,12 @@ export default {
     methods: {
         selectRating(rating) {
             this.selectedRating = rating;
+        },
+        checkLength() {
+            if (this.reviewText.length > 1000) {
+                this.reviewText = this.reviewText.slice(0, 1000); 
+                alert('Không nhập quá 1000 kí tự');
+            }
         },
         submitReview() {
             if (this.selectedRating === 0 || this.reviewText.trim() === '') {
@@ -56,7 +71,6 @@ export default {
                     alert("Đánh giá thành công!");
                     this.submitted = true;
                     this.$router.push('/history'); 
-
                 })
                 .catch(error => {
                     console.error('Error submitting review', error);
@@ -68,7 +82,6 @@ export default {
             this.variantId = this.$route.params.variant;
             this.order = this.$route.params.order;
         },
-
     },
     watch: {
         '$route.params': 'updateParams'
@@ -124,5 +137,14 @@ p {
 
 div {
     margin-bottom: 20px;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+}
+
+textarea.error {
+    border: 1px solid red;
 }
 </style>
