@@ -31,42 +31,49 @@
             </div>
         </div>
         <div class="row isotope-grid">
-            <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-                <!-- Block2 -->
+            <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women" v-for="product in products"
+                v-bind:key="product.id">
                 <div class="block2">
                     <div class="block2-pic hov-img0">
-                        <img src="../../../assets/images/product-01.jpg" alt="IMG-PRODUCT" />
-
-                        <a href="#"
+                        <img :src="product.thumbnail" alt="IMG-PRODUCT" />
+                        <div @click=" goToProductDetail(product.id)"
                             class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
                             Quick View
-                        </a>
+                        </div>
                     </div>
+
                     <div class="block2-txt flex-w flex-t p-t-14">
                         <div class="block2-txt-child1 flex-col-l">
-                            <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                Esprit Ruffle Shirt
+                            <a href="#" @click.prevent="goToProductDetail(product.id)"
+                                class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                {{ product.name }}
                             </a>
-
-                            <span class="stext-105 cl3"> $16.64 </span>
-                        </div>
-                        <div class="block2-txt-child2 flex-r p-t-3">
-                            <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-                                <img class="icon-heart1 dis-block trans-04"
-                                    src="../../../assets/images/icons/icon-heart-01.png" alt="ICON" />
-                                <img class="icon-heart2 dis-block trans-04 ab-t-l"
-                                    src="../../../assets/images/icons/icon-heart-02.png" alt="ICON" />
-                            </a>
+                            <div v-if="product.ratings_count !== 0" class="stars">
+                                {{ avgRating(product.ratings_avg_rating) ?? '0' }} <span v-for="n in 5" :key="n"
+                                    class="star" :class="{ 'filled': n <= product.ratings_avg_rating }">
+                                    ★
+                                </span>({{ product.ratings_count
+                                }})
+                            </div>
+                            <span class="stext-105 cl3"> {{ product.price }} VND </span>
                         </div>
                     </div>
                 </div>
+
+                <div class="block2-txt-child2 flex-r p-t-3">
+                    <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
+                        <img class="icon-heart1 dis-block trans-04" src="../../../assets/images/icons/icon-heart-01.png"
+                            alt="ICON" />
+                        <img class="icon-heart2 dis-block trans-04 ab-t-l"
+                            src="../../../assets/images/icons/icon-heart-02.png" alt="ICON" />
+                    </a>
+                </div>
             </div>
-        </div>
-        <!-- Load more -->
-        <div class="flex-c-m flex-w w-full p-t-45">
-            <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-                Load More
-            </a>
+            <div class="pagination">
+                <button @click="changePage(page)" v-for="page in pages" :key="page" :disabled="page === currentPage">
+                    {{ page }}
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -74,31 +81,91 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
+import axios from "axios";
+import { API_BASE_URL } from "@/utils/config";
 library.add(faStar);
 export default {
-    components: { FontAwesomeIcon },
-    data() {
-        return {
-            showFilters: false,
-            selectedRating: 0,
-        };
+  components: { FontAwesomeIcon },
+  data() {
+    return {
+      showFilters: false,
+      selectedRating: 0,
+      products: [],
+      currentPage: 1,
+      lastPage: 1,
+    };
+  },
+  computed: {
+    pages() {
+      let pages = [];
+      for (let i = 1; i <= this.lastPage; i++) {
+        pages.push(i);
+      }
+      return pages;
     },
-    methods: {
-        toggleFilters() {
-            this.showFilters = !this.showFilters;
-        },
-        selectRating(star) {
-            this.selectedRating = star;
-            console.log(`Rating selected: ${this.selectedRating} stars`);
-        },
+  },
+  methods: {
+    avgRating(rating) {
+      return rating ? parseFloat(rating).toFixed(1) : 0;
     },
+    toggleFilters() {
+      this.showFilters = !this.showFilters;
+    },
+    async selectRating(star) {
+      this.selectedRating = star;
+      this.currentPage = 1; 
+
+      try {
+        const response = await axios.get(`${API_BASE_URL}/get-product-rating-range/${star}?page=${this.currentPage}`);
+        this.products = response.data.data;
+        this.lastPage = response.data.last_page; 
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error fetching products by rating:', error);
+      }
+    },
+    async changePage(page) {
+      this.currentPage = page;
+      try {
+        const response = await axios.get(`${API_BASE_URL}/get-product-rating-range/${this.selectedRating}?page=${this.currentPage}`);
+        this.products = response.data.data;
+      } catch (error) {
+        console.error('Error fetching products for page ' + page, error);
+      }
+    },
+  },
+  created() {
+    this.selectRating(this.selectedRating);
+  },
 };
+
 </script>
 <style>
+.pagination button {
+  margin: 5px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  border: 1px solid #b3b3b3;
+  border-radius: 50%;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.star {
+    color: #ddd;
+}
+
+.star.filled {
+    color: #ffcc00;
+}
+
 .filter {
     overflow: hidden;
     padding-right: 28px;
-    padding-bottom:8px ;
+    padding-bottom: 8px;
 }
 
 .filter-content {
@@ -148,28 +215,34 @@ export default {
         transform: translateY(0);
     }
 }
+
 .sort-container {
-  margin: 20px 0;
+    margin: 20px 0;
 }
+
 .star-label {
-  font-weight: bold;
-  margin-right: 10px;
+    font-weight: bold;
+    margin-right: 10px;
 }
+
 .star-rating {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
+
 .star {
-  font-size: 24px;
-  color: #ccc;
-  cursor: pointer;
-  transition: color 0.2s;
+    font-size: 24px;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
 }
+
 .star.selected {
-  color: #f39c12;
+    color: #f39c12;
 }
+
 .selected-rating {
-  margin-top: 10px;
-  font-style: italic;
+    margin-top: 10px;
+    font-style: italic;
 }
 </style>
