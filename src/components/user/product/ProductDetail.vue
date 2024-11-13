@@ -160,7 +160,8 @@ export default {
             reviews: [],
             rating: [],
             selectedRating: 0,
-            filteredReviews: []
+            filteredReviews: [],
+            variant: null
         };
     },
     methods: {
@@ -238,6 +239,8 @@ export default {
                 variant.size === this.selectedSize && variant.color === this.selectedColor
             );
             this.quantity = selectedVariant ? selectedVariant.quantity : 'hết hàng';
+            this.variant = selectedVariant ? selectedVariant.id : 'không tồn tại';
+            console.log('variant id', this.variant);
             console.log("Số lượng hiện tại:", this.quantity);
         },
         async fecthReviews() {

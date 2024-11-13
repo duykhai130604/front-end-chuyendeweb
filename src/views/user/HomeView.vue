@@ -5,6 +5,7 @@
   <HomeBanner />
   <HomeNewProducts />
   <HomeAllProducts />
+  <HomeFilterProduct/>
   <TheFooter />
   <ProductModal />
   <router-view></router-view>
@@ -51,6 +52,7 @@ import HomeBanner from "../../components/user/home/HomeBanner.vue";
 import HomeAllProducts from "../../components/user/home/HomeAllProducts.vue";
 import ProductModal from "../../components/user/ProductModal.vue";
 import HomeNewProducts from '../../components/user/home/HomeNewProducts.vue';
+import HomeFilterProduct from '@/components/user/home/HomeFilterProduct.vue'
 import "../../assets/js/main.js";
 
 import axios from 'axios';
@@ -58,7 +60,7 @@ import { API_BASE_URL } from '@/utils/config';
 
 export default {
   components: {
-    TheHeader, TheFooter, Cart, Slider, HomeBanner, HomeAllProducts, ProductModal, HomeNewProducts
+    TheHeader, TheFooter, Cart, Slider, HomeBanner, HomeAllProducts, ProductModal, HomeNewProducts,HomeFilterProduct
   },
   data() {
     return {
