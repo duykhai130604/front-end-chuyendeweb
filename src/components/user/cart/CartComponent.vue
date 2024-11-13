@@ -20,11 +20,14 @@
                                     <tr class="table_row" v-for="(item, index) in cartItems" :key="index">
                                         <td class="column-1">
                                             <div class="itemcart1">
-                                                <img :src="item.product_thumbnail" alt="Product Image" class="image-cart">
+                                                <img :src="item.product_thumbnail" alt="Product Image"
+                                                    class="image-cart">
                                             </div>
                                         </td>
                                         <td class="column-2">{{ item.product_name }}<br />{{ item.size_name }}</td>
-                                        <td class="column-3">{{ formatCurrency(item.product_price) }}</td>
+                                        <td class="column-3">{{ formatCurrency(item.product_price_after_discount) }}
+                                        </td>
+
                                         <td class="column-4">
                                             <div class="wrap-num-product flex-w m-l-auto m-r-0">
                                                 <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m"
@@ -39,7 +42,8 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="column-5">{{ formatCurrency(item.product_price * item.variant_quantity) }}</td>
+                                        <td class="column-5">{{ formatCurrency(item.product_price_after_discount *
+                                            item.variant_quantity) }}</td>
                                         <td class="column-6">
                                             <ButtonComponent class="btn-danger" icon="fa fa-times"
                                                 @click="removeItem(item.variant_id)" />
@@ -52,7 +56,8 @@
                             <div class="flex-w flex-m m-r-20 m-tb-5">
                                 <input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text"
                                     name="coupon" placeholder="Mã giảm giá">
-                                <div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5">
+                                <div
+                                    class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5">
                                     Thêm mã giảm giá
                                 </div>
                             </div>
@@ -104,8 +109,15 @@ export default {
     },
     computed: {
         subtotal() {
-            return this.cartItems.reduce((total, item) => total + (item.product_price * item.variant_quantity), 0);
-        }
+        return this.cartItems.reduce((total, item) => {
+            const price = parseInt(item.product_price);  // Giá sản phẩm
+            const discount = parseInt(item.product_discount);  // Giảm giá
+            const quantity = parseInt(item.variant_quantity);  // Số lượng sản phẩm
+            // Tính giá sản phẩm sau giảm giá
+            const priceAfterDiscount = Math.floor(price * (1 - discount / 100));
+            return total + (priceAfterDiscount * quantity);
+        }, 0);
+    }
     },
     methods: {
         increaseQuantity(index) {
@@ -148,7 +160,11 @@ export default {
         fetchCartItems() {
             axios.get(`${API_BASE_URL}/getCarts`, { withCredentials: true })
                 .then((response) => {
-                    this.cartItems = response.data.cart;
+                    this.cartItems = response.data.cart.map(item => {
+                        // Tính toán lại giá sản phẩm sau khi áp dụng giảm giá
+                        item.product_price_after_discount = item.product_price * (1 - item.product_discount / 100);
+                        return item;
+                    });
                 })
                 .catch((error) => {
                     console.log(error);
@@ -159,6 +175,7 @@ export default {
             console.log("Địa chỉ:", this.address);
         }
     },
+
     mounted() {
         this.fetchCartItems();
     }

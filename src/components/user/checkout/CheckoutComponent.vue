@@ -61,7 +61,13 @@
 <script>
 import axios from 'axios';
 import { API_BASE_URL } from '@/utils/config';
+import { useToast } from 'vue-toastification';
+
 export default {
+    setup() {
+        const toast = useToast();
+        return { toast };
+    },
     data() {
         return {
             cartItems: [],
@@ -97,11 +103,19 @@ export default {
             };
 
             axios.request(config)
-                .then(() => {
-                    this.$router.push('/');
+                .then((response) => {
+                    // Kiểm tra phản hồi từ server
+                    if (response.data.payment_url) {
+                        // Chuyển hướng người dùng đến trang thanh toán của MoMo
+                        window.location.href = response.data.payment_url;
+                    } else {
+                        this.toast.error(response.data.message || 'Thanh toán không thành công. Vui lòng thử lại.');
+                    }
                 })
                 .catch((error) => {
-                    console.log(error);
+                    const errorMessage = error.response && error.response.data ? error.response.data.message : 'Đã xảy ra lỗi. Vui lòng thử lại sau.';
+                    this.toast.error(errorMessage);
+                    console.error(error);
                 });
         }
 
