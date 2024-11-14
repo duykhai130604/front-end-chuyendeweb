@@ -82,6 +82,12 @@ const admin = [
         component: () => import("../views/admin/blog/AddBlogView.vue"),
         name: "add-blog",
         meta: { requiresAuth: true, requiredRole: 'admin' }
+    },
+    {
+        path: "/admin/orders",
+        component: () => import("../views/admin/order/OrderView.vue"),
+        name: "orders",
+        meta: { requiresAuth: true, requiredRole: 'admin' }
     }
 ];
 
