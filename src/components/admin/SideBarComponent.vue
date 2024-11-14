@@ -32,19 +32,19 @@
                         <h4 class="text-section">Manage</h4>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Categories</a>
+                        <router-link to="/admin/categories">Categories</router-link>
                     </li>
                     <li class="nav-item">
                         <router-link to="/admin/products">Products</router-link>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Orders</a>
+                        <router-link to="/admin/orders">Orders</router-link>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Blogs</a>
+                        <router-link to="/admin/blogs">Blogs</router-link>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Users</a>
+                        <router-link to="/admin/purchase">Purchase Trends</router-link>
                     </li>
                 </ul>
             </div>

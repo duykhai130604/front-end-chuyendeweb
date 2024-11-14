@@ -109,7 +109,7 @@
                             </div>
                             <div class="pagination">
                                 <button class="mx-2" @click="changePage(currentPage - 1)"
-                                    :disabled="currentPage === 1">Previous</button>
+                                    :disabled="currentPage === 1">Pre</button>
                                 <span>Page {{ currentPage }} of {{ totalPages }}</span>
                                 <button class="mx-2" @click="changePage(currentPage + 1)"
                                     :disabled="currentPage === totalPages">Next</button>

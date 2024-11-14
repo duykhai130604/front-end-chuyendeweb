@@ -26,34 +26,24 @@
       <div class="wrap-menu-desktop">
         <nav class="limiter-menu-desktop container">
           <!-- Logo desktop -->
-          <a href="#" class="logo">
+          <router-link to="/" class="logo">
             <img src="../../assets/images/icons/logo-01.png" alt="IMG-LOGO" />
-          </a>
+          </router-link>
 
           <!-- Menu desktop -->
           <div class="menu-desktop">
             <ul class="main-menu">
-              <li class="active-menu">
-                <a href="index.html">Home</a>
-                <ul class="sub-menu">
-                  <li><a href="index.html">Homepage 1</a></li>
-                  <li><a href="home-02.html">Homepage 2</a></li>
-                  <li><a href="home-03.html">Homepage 3</a></li>
-                </ul>
+              <li>
+                <router-link to="/">Home</router-link>
               </li>
 
               <li>
-                <a href="product.html">Shop</a>
+                <router-link v-if="userAuth" to="/history">Sản phẩm đã mua</router-link>
               </li>
 
               <li class="label1" data-label1="hot">
-                <a href="shoping-cart.html">Features</a>
+                <router-link v-if="userAuth" to="/blogs">Blog</router-link>
               </li>
-
-              <li>
-                <a href="blog.html">Blog</a>
-              </li>
-
               <li>
                 <a href="about.html">About</a>
               </li>
@@ -146,12 +136,7 @@
 
       <ul class="main-menu-m">
         <li>
-          <a href="index.html">Home</a>
-          <ul class="sub-menu-m">
-            <li><a href="index.html">Homepage 1</a></li>
-            <li><a href="home-02.html">Homepage 2</a></li>
-            <li><a href="home-03.html">Homepage 3</a></li>
-          </ul>
+          <router-link to="/">Home</router-link>
           <span class="arrow-main-menu-m">
             <i class="fa fa-angle-right" aria-hidden="true"></i>
           </span>
