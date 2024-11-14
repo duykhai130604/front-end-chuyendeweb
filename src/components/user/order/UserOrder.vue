@@ -26,7 +26,7 @@
                     <td class="product-price">{{ product.total }} VND</td>
                     <td>
                         <button @click="viewProductDetail(product.id)" class="view-detail-btn">Xem chi tiết</button>
-                        <button @click="reviewProduct(product.product,product.variant,product.order)" class="review-btn">Đánh giá</button>
+                        <button v-if="product.rating==0" @click="reviewProduct(product.product,product.variant,product.order)" class="review-btn">Đánh giá</button>
                     </td>
                 </tr>
             </tbody>
