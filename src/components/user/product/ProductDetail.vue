@@ -69,6 +69,7 @@
                             </div>
 
                         </div>
+                        <ButtonComponent @click="handleAddToCart" label="Add to cart" />
                     </div>
                 </div>
             </div>
@@ -107,12 +108,12 @@
                                 </span>
                             </div>
                             <div class="pagination">
-                              <button class="mx-2" @click="changePage(currentPage - 1)"
-                                  :disabled="currentPage === 1">Previous</button>
-                              <span>Page {{ currentPage }} of {{ totalPages }}</span>
-                              <button class="mx-2" @click="changePage(currentPage + 1)"
-                              :disabled="currentPage === totalPages ">Next</button>
-                          </div>
+                                <button class="mx-2" @click="changePage(currentPage - 1)"
+                                    :disabled="currentPage === 1">Previous</button>
+                                <span>Page {{ currentPage }} of {{ totalPages }}</span>
+                                <button class="mx-2" @click="changePage(currentPage + 1)"
+                                    :disabled="currentPage === totalPages">Next</button>
+                            </div>
                             <div v-if="filteredReviews.length > 0" class="review-list">
                                 <div v-for="review in filteredReviews" :key="review.id" class="review-item">
                                     <div class="review-header">
@@ -145,8 +146,15 @@
 <script>
 import axios from 'axios';
 import { API_BASE_URL } from '@/utils/config';
+import ButtonComponent from '@/components/common/ButtonComponent.vue';
+import { useToast } from 'vue-toastification';
 
 export default {
+    components: { ButtonComponent },
+    setup() {
+        const toast = useToast();
+        return { toast };
+    },
     name: 'ProductPage',
     data() {
         return {
@@ -180,10 +188,10 @@ export default {
 
     methods: {
         changePage(page) {
-        if (page < 1 || page > this.totalPages) return; 
-        this.currentPage = page;
-        this.fecthReviews();
-    },
+            if (page < 1 || page > this.totalPages) return;
+            this.currentPage = page;
+            this.fecthReviews();
+        },
         setForAllReviews() {
             this.filteredReviews = this.reviews
         },
@@ -236,6 +244,7 @@ export default {
                 this.selectedSize = null;
                 console.log("Kích cỡ đã hủy chọn");
                 this.quantity = null;
+                this.variant = null;
             } else {
                 this.selectedSize = size;
                 console.log("Kích cỡ đã chọn:", this.selectedSize);
@@ -247,6 +256,7 @@ export default {
                 this.selectedColor = null;
                 console.log("Màu sắc đã hủy chọn");
                 this.quantity = null;
+                this.variant = null;
             } else {
                 this.selectedColor = color;
                 console.log("Màu sắc đã chọn:", this.selectedColor);
@@ -258,7 +268,7 @@ export default {
                 variant.size === this.selectedSize && variant.color === this.selectedColor
             );
             this.quantity = selectedVariant ? selectedVariant.quantity : 'hết hàng';
-            this.variant = selectedVariant ? selectedVariant.id : 'không tồn tại';
+            this.variant = selectedVariant ? selectedVariant.id : null;
             console.log('variant id', this.variant);
             console.log("Số lượng hiện tại:", this.quantity);
         },
@@ -267,7 +277,7 @@ export default {
                 const response = await axios.get(`${API_BASE_URL}/reviews/${this.productId}?page=${this.currentPage}`);
                 this.reviews = response.data.data;
                 this.filteredReviews = this.reviews;
-                this.totalPages = response.data.last_page; 
+                this.totalPages = response.data.last_page;
             } catch (error) {
                 console.error('Error fetching reviews:', error);
             }
@@ -287,6 +297,30 @@ export default {
         },
         avgRating(rating) {
             return rating ? parseFloat(rating).toFixed(1) : 0;
+        },
+        handleAddToCart() {
+            if (this.variant == null) {
+                this.toast.error("Please select size and color")
+                return;
+            }
+            const config = {
+                method: 'post',
+                url: API_BASE_URL + '/addToCart',
+                withCredentials: true,
+                data: {
+                    product_variant_id: this.variant,
+                }
+            };
+            axios.request(config)
+                .then((response) => {
+                    // Kiểm tra phản hồi từ server
+                    this.toast.success(response.data.message);
+                })
+                .catch((error) => {
+                    const errorMessage = error.response && error.response.data ? error.response.data.message : 'Đã xảy ra lỗi. Vui lòng thử lại sau.';
+                    this.toast.error(errorMessage);
+                    console.error(error);
+                });
         }
     },
     created() {
