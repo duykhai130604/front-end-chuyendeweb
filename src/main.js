@@ -16,13 +16,21 @@ window.Echo = new Echo({
     cluster: 'ap1',
     forceTLS: true
 });
+
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faFilter } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+// Thêm biểu tượng vào thư viện
+library.add(faFilter);
 const app = createApp(App);
 
 app.config.warnHandler = function () {
     return null;
 };
 app.config.globalProperties.$axios = axios;
-  
+app.component('font-awesome-icon', FontAwesomeIcon);
+    
 app.use(router);
 app.use(store);
 app.use(CkeditorPlugin);

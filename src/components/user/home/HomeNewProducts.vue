@@ -22,40 +22,45 @@
               </a>
             </div>
 
-           <div class="block2-txt flex-w flex-t p-t-14">
-             <div class="block2-txt-child1 flex-col-l">
-              <span  @click="goToProductDetail(product.id)"
-                class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"
-              >
-                {{ product.name || 'N/A' }}
-              </span>
             <div class="block2-txt flex-w flex-t p-t-14">
               <div class="block2-txt-child1 flex-col-l">
-                <span class="stext-105 cl3">
-                  {{ product.price ? product.price.toFixed(2) : '0.00' }}VND
+                <span @click="goToProductDetail(product.id)" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                  {{ product.name || 'N/A' }}
                 </span>
-              </div>
+                <div v-if="product.ratings_count !==0" class="stars">
+                  {{ avgRating(product.ratings_avg_rating) ?? '0' }} <span v-for="n in 5" :key="n" class="star"
+                    :class="{ 'filled': n <= product.ratings_avg_rating }">
+                    ★
+                  </span>({{ product.ratings_count
+                  }})
+                </div>
+                <div class="block2-txt flex-w flex-t p-t-14">
+                  <div class="block2-txt-child1 flex-col-l">
+                    <span class="stext-105 cl3">
+                      {{ product.price ? product.price.toFixed(2) : '0.00' }}VND
+                    </span>
+                  </div>
 
-              <div class="block2-txt-child2 flex-r p-t-3">
-                <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-                  <img class="icon-heart1 dis-block trans-04" src="../../../assets/images/icons/icon-heart-01.png"
-                    alt="ICON" />
-                  <img class="icon-heart2 dis-block trans-04 ab-t-l"
-                    src="../../../assets/images/icons/icon-heart-02.png" alt="ICON" />
-                </a>
+                  <div class="block2-txt-child2 flex-r p-t-3">
+                    <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
+                      <img class="icon-heart1 dis-block trans-04" src="../../../assets/images/icons/icon-heart-01.png"
+                        alt="ICON" />
+                      <img class="icon-heart2 dis-block trans-04 ab-t-l"
+                        src="../../../assets/images/icons/icon-heart-02.png" alt="ICON" />
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <!-- Load more -->
+        <div class="flex-c-m flex-w w-full p-t-45">
+          <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+            Load More
+          </a>
+        </div>
       </div>
-      </div>
-      <!-- Load more -->
-      <div class="flex-c-m flex-w w-full p-t-45">
-        <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-          Load More
-        </a>
-      </div>
-    </div>
     </div>
   </section>
 </template>
@@ -77,7 +82,9 @@ export default {
     async fetchNewProducts() {
       try {
         const response = await axios.get(API_BASE_URL + '/products/top');
-        this.products = response.data;
+        this.products = response.data.data;
+        console.log(this.products);
+
         console.log('Danh sách sản phẩm:', this.products);
       } catch (error) {
         console.error('Có lỗi xảy ra:', error);
@@ -87,6 +94,19 @@ export default {
       const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
       this.$router.push({ name: 'product', params: { id: encryptResponse.data.encrypted_id } });
     },
+    avgRating(rating) {
+      return rating ? parseFloat(rating).toFixed(1) : 0;
+    },
+ 
   }
 };
 </script>
+<style scoped>
+.star {
+  color: #ddd;
+}
+
+.star.filled {
+  color: #ffcc00;
+}
+</style>
