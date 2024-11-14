@@ -10,11 +10,13 @@
             <div class="filter">
                 <div v-if="showFilters" class="filter-content">
                     <button class="filter-option" data-filter="all">All Products</button>
-                    <button class="filter-option" data-filter="women">Women</button>
-                    <button class="filter-option" data-filter="men">Men</button>
-                    <button class="filter-option" data-filter="bag">Bag</button>
-                    <button class="filter-option" data-filter="shoes">Shoes</button>
-                    <button class="filter-option" data-filter="watches">Watches</button>
+                    <div class="btn-group" v-for="cate in parenCate" :key="cate.id">
+                        <button @click="getChild(cate.id)" class="filter-option" data-filter="women">{{ cate.name
+                            }}</button>
+                    </div>
+                    <div class="btn-category" v-for="cate in child" :key="cate.id">
+                        <div @click="getProducts(cate.id)" class="btn child-category">{{ cate.name }}</div>
+                    </div>
                     <div class="sort-container">
                         <label class="star-label">Select Star Rating:</label>
                         <div class="star-rating">
@@ -85,75 +87,100 @@ import axios from "axios";
 import { API_BASE_URL } from "@/utils/config";
 library.add(faStar);
 export default {
-  components: { FontAwesomeIcon },
-  data() {
-    return {
-      showFilters: false,
-      selectedRating: 0,
-      products: [],
-      currentPage: 1,
-      lastPage: 1,
-    };
-  },
-  computed: {
-    pages() {
-      let pages = [];
-      for (let i = 1; i <= this.lastPage; i++) {
-        pages.push(i);
-      }
-      return pages;
+    components: { FontAwesomeIcon },
+    data() {
+        return {
+            showFilters: false,
+            selectedRating: 0,
+            products: [],
+            currentPage: 1,
+            lastPage: 1,
+            cates: [],
+            parenCate: [],
+            child: [],
+        };
     },
-  },
-  methods: {
-    avgRating(rating) {
-      return rating ? parseFloat(rating).toFixed(1) : 0;
+    computed: {
+        pages() {
+            let pages = [];
+            for (let i = 1; i <= this.lastPage; i++) {
+                pages.push(i);
+            }
+            return pages;
+        },
     },
-    toggleFilters() {
-      this.showFilters = !this.showFilters;
-    },
-    async selectRating(star) {
-      this.selectedRating = star;
-      this.currentPage = 1; 
+    methods: {
+        async getChild(parent) {
+            this.child = this.cates.filter(c => c.parent_id === parent);
+        },
+        async getCates() {
+            const response = await axios.get(`${API_BASE_URL}/categories-filter`);
+            this.cates = response.data;
+            this.parenCate = this.cates.filter(c => c.parent_id === 0);
+        },
+        async getProducts(cate) {
+            const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${cate}`);
+            try {
+                const response = await axios.get(`${API_BASE_URL}/product-category/${encryptResponse.data.encrypted_id}`);
+                this.products = response.data.data;
+                this.lastPage = response.data.last_page;
+            } catch (error) {
+                console.log(error.message);
+            }
+        },
+        avgRating(rating) {
+            return rating ? parseFloat(rating).toFixed(1) : 0;
+        },
+        toggleFilters() {
+            this.showFilters = !this.showFilters;
+        },
+        async selectRating(star) {
+            this.selectedRating = star;
+            this.currentPage = 1;
 
-      try {
-        const response = await axios.get(`${API_BASE_URL}/get-product-rating-range/${star}?page=${this.currentPage}`);
-        this.products = response.data.data;
-        this.lastPage = response.data.last_page; 
-        console.log(response.data);
-      } catch (error) {
-        console.error('Error fetching products by rating:', error);
-      }
+            try {
+                const response = await axios.get(`${API_BASE_URL}/get-product-rating-range/${star}?page=${this.currentPage}`);
+                this.products = response.data.data;
+                this.lastPage = response.data.last_page;
+            } catch (error) {
+                console.error('Error fetching products by rating:', error);
+            }
+        },
+        async changePage(page) {
+            this.currentPage = page;
+            try {
+                const response = await axios.get(`${API_BASE_URL}/get-product-rating-range/${this.selectedRating}?page=${this.currentPage}`);
+                this.products = response.data.data;
+            } catch (error) {
+                console.error('Error fetching products for page ' + page, error);
+            }
+        },
+        async goToProductDetail(id) {
+            const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
+            this.$router.push({ name: 'product', params: { id: encryptResponse.data.encrypted_id } });
+        }
     },
-    async changePage(page) {
-      this.currentPage = page;
-      try {
-        const response = await axios.get(`${API_BASE_URL}/get-product-rating-range/${this.selectedRating}?page=${this.currentPage}`);
-        this.products = response.data.data;
-      } catch (error) {
-        console.error('Error fetching products for page ' + page, error);
-      }
+    created() {
+        this.selectRating(this.selectedRating);
+        this.getCates();
     },
-  },
-  created() {
-    this.selectRating(this.selectedRating);
-  },
 };
-
 </script>
 <style>
 .pagination button {
-  margin: 5px;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  border: 1px solid #b3b3b3;
-  border-radius: 50%;
+    margin: 5px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    border: 1px solid #b3b3b3;
+    border-radius: 50%;
 }
 
 .pagination button:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+    cursor: not-allowed;
+    opacity: 0.5;
 }
+
 .star {
     color: #ddd;
 }
@@ -244,5 +271,11 @@ export default {
 .selected-rating {
     margin-top: 10px;
     font-style: italic;
+}
+
+/* css vo day */
+.child-category {
+    border: 3px solid #ccc;
+    margin: 5px;
 }
 </style>

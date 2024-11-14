@@ -1,4 +1,4 @@
-<template> 
+<template>
     <div>
         <div class="container">
             <div class="page-inner">
@@ -36,20 +36,42 @@
                                                 <td>{{ getName(blog.user_id) }}</td>
                                                 <td>
                                                     <!-- Hiển thị hình ảnh nếu tồn tại -->
-                                                    <img :src="blog.image_url" alt="Blog Image" width="50" height="50" v-if="blog.image_url" />
+                                                    <img :src="blog.image_url" alt="Blog Image" width="50" height="50"
+                                                        v-if="blog.image_url" />
                                                     <!-- Thông báo nếu không có ảnh -->
                                                     <span v-else>Không có ảnh</span>
                                                 </td>
                                                 <td>{{ formatDate(blog.created_at) }}</td>
                                                 <td>{{ formatDate(blog.updated_at) }}</td>
                                                 <td>
-                                                    <a @click="getEncrypt(blog.id)" class="btn btn-primary btn-sm">Sửa</a>
-                                                    <a @click.prevent="deleteBlog(blog.id)" class="btn btn-danger btn-sm">Xóa</a>
+                                                    <a @click="getEncrypt(blog.id)"
+                                                        class="btn btn-primary btn-sm">Sửa</a>
+                                                    <a @click.prevent="deleteBlog(blog.id)"
+                                                        class="btn btn-danger btn-sm">Xóa</a>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
+                                <ul class="pagination">
+                                    <li v-if="currentPage > 1">
+                                        <a href="" @click.prevent="changePage(currentPage - 1)" aria-hidden="true">
+                                            « 
+                                        </a>
+                                    </li>
+                                    <li v-for="page in totalPages" :key="page">
+                                        <a href="" @click.prevent="changePage(page)"
+                                            :class="{ 'active': currentPage === page }"
+                                            :aria-current="currentPage === page ? 'page' : undefined">
+                                            {{ page }}
+                                        </a>
+                                    </li>
+                                    <li v-if="currentPage < totalPages">
+                                        <a href="" @click.prevent="changePage(currentPage + 1)" aria-hidden="true">
+                                             »
+                                        </a>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -75,24 +97,28 @@ export default {
         };
     },
     methods: {
-        async getBlogsbypage(page = 1) {
+        changePage(page) {
+            if (page < 1 || page > this.totalPages) return;
+            this.getBlogsbypage(page);
+        },
+        async getBlogsbypage(page) {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/blogs?page=${page}&perPage=${this.perPage}`);
-                this.blogs = response.data.data;
-                this.totalPages = response.data.last_page; // Cập nhật số trang từ API
-                this.currentPage = response.data.current_page; // Cập nhật trang hiện tại
+                const response = await axios.get(`http://127.0.0.1:8000/api/blogs?page=${page}`);
+                this.blogs = response.data.data.filter(blog => blog.status !== -1);
+                this.totalPages = response.data.last_page;
+                this.currentPage = response.data.current_page;
             } catch (error) {
                 console.error("Có lỗi xảy ra khi lấy danh sách blog:", error);
             }
         },
-        async getBlogs() {
-            try {
-                const response = await axios.get('http://127.0.0.1:8000/api/blogs');
-                this.blogs = response.data.filter(blog => blog.status !== -1);
-            } catch (error) {
-                console.error("Có lỗi xảy ra khi lấy danh sách blog:", error);
-            }
-        },
+        // async getBlogs() {
+        //     try {
+        //         const response = await axios.get('http://127.0.0.1:8000/api/blogs');
+        //         this.blogs = response.data.data.filter(blog => blog.status !== -1);
+        //     } catch (error) {
+        //         console.error("Có lỗi xảy ra khi lấy danh sách blog:", error);
+        //     }
+        // },
         formatDate(date) {
             const d = new Date(date);
             const year = d.getFullYear();
@@ -146,12 +172,37 @@ export default {
         },
     },
     changePage(page) {
-            if (page < 1 || page > this.totalPages) return;
-            this.getBlogsbypage(page);
-        },
+        if (page < 1 || page > this.totalPages) return;
+        this.getBlogsbypage(page);
+    },
     async created() {
-        await this.getBlogs(); // Đợi lấy danh sách blog trước
-        await this.getNameAuthor(); // Sau đó gọi hàm lấy tên tác giả
+        await this.getBlogsbypage();
+        await this.getNameAuthor();
     }
 };
 </script>
+<style scoped>
+.pagination {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.pagination li {
+    margin: 0 1px;
+}
+
+.pagination a {
+    display: block;
+    padding: 0.5em 1em;
+    border: 1px solid #999;
+    border-radius: 0.2em;
+    text-decoration: none;
+}
+
+.pagination a[aria-current="page"] {
+    background-color: #333;
+    color: #fff;
+}
+</style>
