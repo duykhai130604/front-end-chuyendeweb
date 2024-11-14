@@ -106,10 +106,20 @@
                                     ★
                                 </span>
                             </div>
+                            <div class="pagination">
+                              <button class="mx-2" @click="changePage(currentPage - 1)"
+                                  :disabled="currentPage === 1">Previous</button>
+                              <span>Page {{ currentPage }} of {{ totalPages }}</span>
+                              <button class="mx-2" @click="changePage(currentPage + 1)"
+                              :disabled="currentPage === totalPages ">Next</button>
+                          </div>
                             <div v-if="filteredReviews.length > 0" class="review-list">
                                 <div v-for="review in filteredReviews" :key="review.id" class="review-item">
                                     <div class="review-header">
-                                        <strong class="reviewer-name">{{ review.user }}</strong>
+                                        <strong class="reviewer-name">{{ review.user }} </strong>
+                                        <span>size: {{ review.size }}<div class="color-button"
+                                                :style="{ background: review.color }"></div></span>
+
                                         <span class="review-date">{{ formatDate(review.created_at) }}</span>
                                     </div>
                                     <div class="review-rating">
@@ -160,10 +170,20 @@ export default {
             reviews: [],
             rating: [],
             selectedRating: 0,
-            filteredReviews: []
+            filteredReviews: [],
+            currentPage: 1,
+            totalPages: 1,
+            paginatedReviews: [],
+            variant: null,
         };
     },
+
     methods: {
+        changePage(page) {
+        if (page < 1 || page > this.totalPages) return; 
+        this.currentPage = page;
+        this.fecthReviews();
+    },
         setForAllReviews() {
             this.filteredReviews = this.reviews
         },
@@ -238,13 +258,16 @@ export default {
                 variant.size === this.selectedSize && variant.color === this.selectedColor
             );
             this.quantity = selectedVariant ? selectedVariant.quantity : 'hết hàng';
+            this.variant = selectedVariant ? selectedVariant.id : 'không tồn tại';
+            console.log('variant id', this.variant);
             console.log("Số lượng hiện tại:", this.quantity);
         },
         async fecthReviews() {
             try {
-                const response = await axios.get(`${API_BASE_URL}/reviews/${this.productId}`);
+                const response = await axios.get(`${API_BASE_URL}/reviews/${this.productId}?page=${this.currentPage}`);
                 this.reviews = response.data.data;
                 this.filteredReviews = this.reviews;
+                this.totalPages = response.data.last_page; 
             } catch (error) {
                 console.error('Error fetching reviews:', error);
             }
@@ -270,7 +293,7 @@ export default {
         this.fetchProductDetails();
         this.fecthReviews();
         this.fetchRating();
-    }
+    },
 };
 
 
@@ -459,10 +482,6 @@ export default {
     display: inline-block;
     font-size: 24px;
     color: #ccc;
-}
-
-.star.filled {
-    color: #ff9800;
 }
 
 .star {
