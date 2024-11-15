@@ -8,7 +8,7 @@
                 <div class="col-md-4">
                     <label for="orderDate" class="form-label">Ngày đặt hàng</label>
                     <div class="input-group">
-                        <input type="date" class="form-control" id="orderDate" placeholder="2024/07/31 - 2024/08/30" />
+                        <input type="date"  @change="fetchOrderByDate(page=1)" v-model="date" class="form-control" id="orderDate" placeholder="2024/08/30" />
                         <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                                             <td>{{ order.address }} <p>Phone number: {{ order.phone }}</p>
                                             </td>
                                             <td>{{ getStatusText(order.status) }}</td>
-                                            <td>{{ formatDate(order.order_created_at) }}</td>
+                                            <td>{{ formatDate(order.created_at) }}</td>
                                             <td>
                                                 <!-- Button to trigger the modal -->
                                                 <div class="btn btn-primary btn-sm" @click="openModal(order)">Details
@@ -54,7 +54,7 @@
                                                         <p><strong>Phone:</strong> {{ orderModal.phone }}</p>
                                                         <p><strong>Address:</strong> {{ orderModal.address }}</p>
                                                         <p><strong>Order Created At:</strong> {{
-                                                            orderModal.order_created_at
+                                                            orderModal.created_at
                                                             }}</p>
                                                         <p><strong>Quantity:</strong> {{ orderModal.quantity }}</p>
                                                         <p><strong>Total:</strong> {{ orderModal.total }} VND</p>
@@ -81,7 +81,7 @@
                                                         </div>
                                                     </div>
                                                 </div> <a href="#" class="btn btn-danger btn-sm"
-                                                    v-if="order.status === 3 || order.status === 2"
+                                                    v-if="order.status === 3"
                                                     @click="cancelOrder(order.id)">Cancel</a>
                                             </td>
                                         </tr>
@@ -127,10 +127,19 @@ export default {
             orderModal: null,
             isModalVisible: false,
             totalPages:0,
-            currentPage:1
+            currentPage:1,
+            date:''
         };
     },
     methods: {
+        async fetchOrderByDate(page) {
+            try {
+                const response = await axios.get(API_BASE_URL+'/orders-by-date/'+this.date+'?page='+page);
+                this.orders = response.data.data;                
+            } catch (error) {
+                console.error('Error fetching order details:', error);
+            }
+        },
         async fetchOrders(page) {
             try {
                 const response = await axios.get(API_BASE_URL + '/orders?page='+page);
