@@ -8,6 +8,7 @@
   <HomeFilterProduct/>
   <TheFooter />
   <ProductModal />
+  <ChatBotComponent />
   <router-view></router-view>
 </template>
 <script>
@@ -54,13 +55,14 @@ import ProductModal from "../../components/user/ProductModal.vue";
 import HomeNewProducts from '../../components/user/home/HomeNewProducts.vue';
 import HomeFilterProduct from '@/components/user/home/HomeFilterProduct.vue'
 import "../../assets/js/main.js";
+import ChatBotComponent from "@/components/common/ChatBotComponent.vue";
 
 import axios from 'axios';
 import { API_BASE_URL } from '@/utils/config';
 
 export default {
   components: {
-    TheHeader, TheFooter, Cart, Slider, HomeBanner, HomeAllProducts, ProductModal, HomeNewProducts,HomeFilterProduct
+    TheHeader, TheFooter, Cart, Slider, HomeBanner, HomeAllProducts, ProductModal, HomeNewProducts,HomeFilterProduct,ChatBotComponent
   },
   data() {
     return {

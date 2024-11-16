@@ -51,10 +51,6 @@ const home = [
         component: () => import("../views/user/review/AddReviewView.vue"),
         name:"review"
     },
-    {
-        path: '/chat',
-        component: () =>import("../components/ChatComponent.vue")
-    }
 ];
 
 export default home;
