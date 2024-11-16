@@ -28,7 +28,7 @@
                                         <div class="col col-stats ms-3 ms-sm-0">
                                             <div class="numbers">
                                                 <p class="card-category">Users</p>
-                                                <h4 class="card-title">455</h4>
+                                                <h4 class="card-title">{{ this.totalUsers }}</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -47,7 +47,7 @@
                                         <div class="col col-stats ms-3 ms-sm-0">
                                             <div class="numbers">
                                                 <p class="card-category">Sales</p>
-                                                <h4 class="card-title">$233</h4>
+                                                <h4 class="card-title">{{ this.totalAmount }}</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -66,7 +66,7 @@
                                         <div class="col col-stats ms-3 ms-sm-0">
                                             <div class="numbers">
                                                 <p class="card-category">Order</p>
-                                                <h4 class="card-title">7=788</h4>
+                                                <h4 class="card-title">{{ this.totalOrders}}</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -85,11 +85,45 @@ import SideBarComponent from '../SideBarComponent.vue';
 import NavbarComponent from '../NavbarComponent.vue';
 import HeaderComponent from '../HeaderComponent.vue';
 import FooterComponent from '../FooterComponent.vue';
+import { API_BASE_URL } from '@/utils/config';
+import axios from 'axios';
 export default {
     name: 'AdminDashboard',
     components: {
         SideBarComponent, NavbarComponent, HeaderComponent, FooterComponent
     },
+    data() {
+        return {
+            totalUsers: 0,
+            totalAmount: 0,
+            totalOrders: 0
+        }
+    },
+    mounted() {
+        this.fetchTotalUsers();
+        this.fetchTotalAmount();
+        this.fetchTotalOrders();
+    },
+    methods : {
+        fetchTotalUsers() {
+            axios.get(API_BASE_URL+'/admin/getTotalUsers')
+            .then(response => {
+                this.totalUsers = response.data.total_users;
+            })
+        },
+        fetchTotalAmount() {
+            axios.get(API_BASE_URL+'/admin/getTotalAmount')
+            .then(response => {
+                this.totalAmount = response.data.total_amount;
+            })
+        },
+        fetchTotalOrders() {
+            axios.get(API_BASE_URL+'/admin/getTotalOrders')
+            .then(response => {
+                this.totalOrders = response.data.total_orders;
+            })
+        }
+    }
 }
 </script>
 <style>

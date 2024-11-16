@@ -1,0 +1,180 @@
+<template>
+    <div class="chat-container">
+      <!-- Chat Bubble -->
+      <div v-if="!isChatOpen" class="chat-bubble" @click="toggleChat">
+        💬
+      </div>
+  
+      <!-- Chat Window -->
+      <div v-else class="chat-window">
+        <div class="chat-header">
+          <span>Chat với chúng tôi</span>
+          <button class="close-button" @click="toggleChat">✖</button>
+        </div>
+        <div class="chat-body">
+          <div v-for="(message, index) in messages" :key="index" class="chat-message" :class="message.sender">
+            <span>{{ message.text }}</span>
+          </div>
+        </div>
+        <div class="chat-footer">
+          <input
+            v-model="newMessage"
+            type="text"
+            placeholder="Nhập tin nhắn..."
+            @keydown.enter="sendMessage"
+          />
+          <button @click="sendMessage">Gửi</button>
+        </div>
+      </div>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    data() {
+      return {
+        isChatOpen: false, // Trạng thái mở/đóng cửa sổ chat
+        messages: [
+          { sender: "bot", text: "Xin chào! Tôi có thể giúp gì cho bạn?" },
+          { sender: "user", text: "Tôi cần hỗ trợ về sản phẩm." },
+          { sender: "bot", text: "Vui lòng cho tôi biết chi tiết vấn đề." },
+        ],
+        newMessage: "", // Tin nhắn mới từ người dùng
+      };
+    },
+    methods: {
+      toggleChat() {
+        this.isChatOpen = !this.isChatOpen;
+      },
+      sendMessage() {
+        if (this.newMessage.trim() === "") return;
+  
+        // Thêm tin nhắn của người dùng
+        this.messages.push({ sender: "user", text: this.newMessage });
+  
+        // Reset input
+        this.newMessage = "";
+  
+        // Trả lời của bot
+        setTimeout(() => {
+          this.messages.push({
+            sender: "bot",
+            text: "Cảm ơn bạn đã gửi tin nhắn! Chúng tôi sẽ phản hồi sớm.",
+          });
+        }, 1000);
+      },
+    },
+  };
+  </script>
+  
+  <style scoped>
+  .chat-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+  
+  /* Chat Bubble */
+  .chat-bubble {
+    background-color: #007bff;
+    color: white;
+    font-size: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Chat Window */
+  .chat-window {
+    width: 300px;
+    height: 400px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Chat Header */
+  .chat-header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  
+  .close-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  /* Chat Body */
+  .chat-body {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .chat-message {
+    max-width: 80%;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  
+  .chat-message.bot {
+    background-color: #f1f1f1;
+    align-self: flex-start;
+  }
+  
+  .chat-message.user {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+  }
+  
+  /* Chat Footer */
+  .chat-footer {
+    display: flex;
+    gap: 5px;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+  }
+  
+  .chat-footer input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .chat-footer button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .chat-footer button:hover {
+    background-color: #0056b3;
+  }
+  </style>
+  
