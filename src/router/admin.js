@@ -89,6 +89,20 @@ const admin = [
         name: "orders",
         meta: { requiresAuth: true, requiredRole: 'admin' }
     }
+    ,
+    {
+        path: "/admin/purchase",
+        component: () => import("../views/admin/order/PurchaseView.vue"),
+        name: "purchase",
+        meta: { requiresAuth: true, requiredRole: 'admin' }
+    }
+    ,
+    {
+        path: "/admin/cancled",
+        component: () => import("../views/admin/order/OrderCancled.vue"),
+        name: "cancled",
+        meta: { requiresAuth: true, requiredRole: 'admin' }
+    }
 ];
 
 export default admin;

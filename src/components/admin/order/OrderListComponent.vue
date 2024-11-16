@@ -14,6 +14,7 @@
                 </div>
             </div>
             <div class="row">
+                <div class="btn btn-primary my-2" style="width: 10%;" @click="fetchOrders">Show all</div>
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
@@ -135,7 +136,9 @@ export default {
         async fetchOrderByDate(page) {
             try {
                 const response = await axios.get(API_BASE_URL+'/orders-by-date/'+this.date+'?page='+page);
-                this.orders = response.data.data;                
+                this.orders = response.data.data;   
+                this.totalPages = response.data.last_page;
+                this.currentPage = response.data.current_page;             
             } catch (error) {
                 console.error('Error fetching order details:', error);
             }
