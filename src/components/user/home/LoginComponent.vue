@@ -25,7 +25,8 @@
             <div class="text-center mt-3">
                 <!-- <a href="http://localhost:8080/reset" class="text-decoration-none">Bạn quên <span
                         class="text-primary">mật khẩu?</span></a><br> -->
-                <a href="http://localhost:8080/reset" class="text-decoration-none">Bạn quên <span class="text-primary">mật khẩu?</span></a><br>
+                <a href="http://localhost:8080/reset" class="text-decoration-none">Bạn quên <span
+                        class="text-primary">mật khẩu?</span></a><br>
                 <a href="#" class="text-decoration-none">Bạn chưa có <span class="text-primary">tài khoản?</span></a>
             </div>
         </div>
@@ -40,24 +41,21 @@ export default {
         return {
             email: '',
             password: '',
-            emailError: '', // Biến để lưu lỗi email
-            passwordError: '' // Biến để lưu lỗi password
+            emailError: '', 
+            passwordError: '' 
         };
     },
     methods: {
         reset() {
-            this.$router.push({ name: 'list-blogs' }); // Đường dẫn đến danh sách blog
+            this.$router.push({ name: 'list-blogs' }); 
         },
         validateEmail(email) {
             const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@"]+\.)+[^<>()[\]\\.,;:\s@"]{2,})$/i;
             return re.test(email);
         },
         async login() {
-            // Reset lỗi
             this.emailError = '';
             this.passwordError = '';
-
-            // Kiểm tra email
             if (!this.email) {
                 this.emailError = 'Email is required';
                 return;
@@ -65,14 +63,10 @@ export default {
                 this.emailError = 'Invalid email format';
                 return;
             }
-
-            // Kiểm tra password
             if (!this.password) {
                 this.passwordError = 'Password is required';
                 return;
             }
-
-            // Nếu không có lỗi, thực hiện login
             try {
                 const response = await axios.post(API_BASE_URL + '/login', {
                     email: this.email,
@@ -80,24 +74,23 @@ export default {
                 }, {
                     headers: {
                         'Content-Type': 'application/json'
-                    },
-                    withCredentials: true 
+                    }
                 });
 
-                if (response) {
-                    this.$store.commit('setUserRole', response.data.user.role); 
-                    console.log("Role",this.$store.state.userRole);
-                    
+                if (response && response.data.token) {
+                    localStorage.setItem('authToken', response.data.token);
+                    this.$store.commit('setUserRole', response.data.user.role);
+                    console.log("Role", this.$store.state.userRole);
                     this.$router.push('/');
-                }
-                else {
-                    console.log('that bai')
+                } else {
+                    console.log('Login failed');
                 }
             } catch (error) {
                 console.error('Error:', error);
                 this.emailError = 'An error occurred. Please try again later.';
             }
         }
+
     }
 }
 </script>

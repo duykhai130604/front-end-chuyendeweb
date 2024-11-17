@@ -122,7 +122,7 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../../../utils/config';
 
-export default {
+export default { 
   data() {
     return {
       topProducts: [],
@@ -140,7 +140,12 @@ export default {
   methods: {
     async fetchTopProducts() {
       try {
-        const response = await axios.get(`${API_BASE_URL}/top-products`);
+        const response = await axios.get(`${API_BASE_URL}/top-products`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
         this.topProducts = response.data.data;
       } catch (error) {
         console.error('Error fetching top products:', error);
@@ -156,9 +161,9 @@ export default {
           `${API_BASE_URL}/top-products-user-not`,
           {
             params: { page: this.page },
-            withCredentials: true,
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}` 
             }
           }
         );
@@ -179,11 +184,10 @@ export default {
     async fetchProductsByUser() {
       try {
         const response = await axios.get(`${API_BASE_URL}/user-top-products?page=1`, {
-          withCredentials: true,
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
           }
-
         });
         console.log('có user');
         this.topProducts = response.data.data;
@@ -198,9 +202,9 @@ export default {
 
         if (this.userAuth) {
           response = await axios.get(`${API_BASE_URL}/user-top-products?page=${this.currentPage + 1}`, {
-            withCredentials: true,
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
             }
           });
         } else {
@@ -224,8 +228,7 @@ export default {
       } finally {
         this.loading = false;
       }
-    }
-    ,
+    },
     async goToProductDetail(id) {
       const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
       this.$router.push({ name: 'product', params: { id: encryptResponse.data.encrypted_id } });
@@ -255,6 +258,7 @@ export default {
     }
   }
 };
+
 </script>
 <style scoped>
 .star {

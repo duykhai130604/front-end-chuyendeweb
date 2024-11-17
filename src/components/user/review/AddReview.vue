@@ -9,17 +9,18 @@
         </div>
 
         <div>
-            <textarea v-model="reviewText" placeholder="Nhập nội dung đánh giá..." 
-                      :class="{'error': reviewText.length > 1000}" @input="checkLength"></textarea>
+            <textarea v-model="reviewText" placeholder="Nhập nội dung đánh giá..."
+                :class="{ 'error': reviewText.length > 1000 }" @input="checkLength"></textarea>
         </div>
-        
+
         <!-- Hiển thị thông báo lỗi khi ký tự vượt quá 1000 -->
         <div v-if="reviewText.length > 1000" class="error-message">
             <p>Vui lòng không nhập quá 1000 ký tự.</p>
         </div>
 
         <div>
-            <button @click="submitReview" :disabled="reviewText.length > 1000 || selectedRating === 0 || reviewText.trim() === ''">
+            <button @click="submitReview"
+                :disabled="reviewText.length > 1000 || selectedRating === 0 || reviewText.trim() === ''">
                 Gửi đánh giá
             </button>
         </div>
@@ -47,7 +48,7 @@ export default {
         },
         checkLength() {
             if (this.reviewText.length > 1000) {
-                this.reviewText = this.reviewText.slice(0, 1000); 
+                this.reviewText = this.reviewText.slice(0, 1000);
                 alert('Không nhập quá 1000 kí tự');
             }
         },
@@ -63,20 +64,37 @@ export default {
                 variant: this.variantId,
                 order: this.order,
             };
-            axios.post(API_BASE_URL + '/add-review', reviewData, {
-                withCredentials: true
-            })
-                .then(response => {
-                    console.log('Review submitted', response);
-                    alert("Đánh giá thành công!");
-                    this.submitted = true;
-                    this.$router.push('/history'); 
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    console.log('No token found, user is not authenticated');
+                    alert('Bạn cần đăng nhập để đánh giá sản phẩm.');
+                    return;
+                }
+
+                axios.post(API_BASE_URL + '/add-review', reviewData, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    }
                 })
-                .catch(error => {
-                    console.error('Error submitting review', error);
-                });
+                    .then(response => {
+                        console.log('Review submitted', response);
+                        alert("Đánh giá thành công!");
+                        this.submitted = true;
+                        this.$router.push('/history');
+                    })
+                    .catch(error => {
+                        console.error('Error submitting review', error);
+                    });
+
+            } catch (error) {
+                console.error('Error retrieving token:', error);
+            }
+
             this.submitted = true;
-        },
+        }
+        ,
         updateParams() {
             this.productId = this.$route.params.id;
             this.variantId = this.$route.params.variant;

@@ -127,13 +127,13 @@ export default {
             try {
                 if (this.validateCancellation()) {
                     if (confirm('Bạn có chắc hủy đơn này?')) {
-                        if (this.reason == 'Khác'){
+                        if (this.reason == 'Khác') {
                             await axios.put(API_BASE_URL + '/product-order/update-status', {
                                 id: this.order,
                                 status: 2,
                                 reason: this.otherReason,
                             });
-                        }else{
+                        } else {
                             await axios.put(API_BASE_URL + '/product-order/update-status', {
                                 id: this.order,
                                 status: 2,
@@ -176,19 +176,33 @@ export default {
             }
         },
         fetchProductOrders() {
-            axios
-                .get(`${API_BASE_URL}/user/orders?page=${this.page}`, {
-                    withCredentials: true
-                })
-                .then(response => {
-                    const data = response.data;
-                    this.purchasedProducts.push(...data.data);
-                    this.hasMore = data.current_page < data.last_page;
-                })
-                .catch(error => {
-                    console.error("Error fetching product orders:", error);
-                });
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    console.log('No token found, user is not authenticated');
+                    return;
+                }
+
+                axios
+                    .get(`${API_BASE_URL}/user/orders?page=${this.page}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` 
+                        }
+                    })
+                    .then(response => {
+                        const data = response.data;
+                        this.purchasedProducts.push(...data.data);
+                        this.hasMore = data.current_page < data.last_page;
+                    })
+                    .catch(error => {
+                        console.error("Error fetching product orders:", error);
+                    });
+            } catch (error) {
+                console.error("Error retrieving token:", error);
+            }
         },
+
         loadMore() {
             this.page++;
             this.fetchProductOrders();

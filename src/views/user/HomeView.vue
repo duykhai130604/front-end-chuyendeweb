@@ -57,36 +57,36 @@ import HomeFilterProduct from '@/components/user/home/HomeFilterProduct.vue'
 import "../../assets/js/main.js";
 import ChatBotComponent from "@/components/common/ChatBotComponent.vue";
 
-import axios from 'axios';
-import { API_BASE_URL } from '@/utils/config';
+//import axios from 'axios';
+//import { API_BASE_URL } from '@/utils/config';
 
 export default {
   components: {
     TheHeader, TheFooter, Cart, Slider, HomeBanner, HomeAllProducts, ProductModal, HomeNewProducts,HomeFilterProduct,ChatBotComponent
-  },
-  data() {
-    return {
-      userAuth: null,
-    };
-  },
-  methods: {
-    async fetchUser() {
-      try {
-        const re = await axios.get(API_BASE_URL + '/me', {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        this.userAuth = re.data;
-        localStorage.setItem('user', this.userAuth.name)
-      } catch (error) {
-        console.log('nothing to show');
-      }
-    }
-  },
-  created() {
-    this.fetchUser();
-  },
-}
+  // },
+  // data() {
+  //   return {
+  //     userAuth: null,
+  //   };
+  // },
+  // methods: {
+  //   async fetchUser() {
+  //     try {
+  //       const re = await axios.get(API_BASE_URL + '/me', {
+  //         withCredentials: true,
+  //         headers: {
+  //           'Content-Type': 'application/json'
+  //         }
+  //       });
+  //       this.userAuth = re.data;
+  //       localStorage.setItem('user', this.userAuth.name)
+  //     } catch (error) {
+  //       console.log('nothing to show');
+  //     }
+  //   }
+  // },
+  // created() {
+  //   this.fetchUser();
+  // },
+}}
 </script>
