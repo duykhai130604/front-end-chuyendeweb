@@ -208,25 +208,33 @@ export default {
         async fetchProductDetails() {
             this.productId = this.$route.params.id;
             try {
+                const token = localStorage.getItem('authToken');
                 const response = await axios.get(`${API_BASE_URL}/getProductbyID/${this.productId}`, {
-                    withCredentials: true,
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token??null}` 
                     }
                 });
                 this.product = response.data;
-                if (response.data.discount != 0) {
+                if (response.data.discount !== 0) {
                     this.primaryPrice = response.data.price - (response.data.price * response.data.discount) / 100;
                 }
-                const variants = await axios.get(`${API_BASE_URL}/product/variants/${this.productId}`);
+
+                const variants = await axios.get(`${API_BASE_URL}/product/variants/${this.productId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 this.variants = variants.data;
                 this.sizes = [...new Set(variants.data.map(variant => variant.size))];
                 this.colors = [...new Set(variants.data.map(variant => variant.color))];
                 this.imgs = variants.data.map(variant => variant.url);
+
             } catch (error) {
                 console.error('Error fetching product:', error);
             }
-        },
+        }
+        ,
         fetchRating() {
             axios.get(`${API_BASE_URL}/product/${this.productId}/rating`)
                 .then(response => {

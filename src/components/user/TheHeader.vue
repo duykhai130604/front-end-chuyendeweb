@@ -121,7 +121,7 @@
             <a href="#" class="flex-c-m p-lr-10 trans-04"> Help & FAQs </a>
 
             <a href="#" class="flex-c-m p-lr-10 trans-04"> My Account </a>
-            
+
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-if="userAuth">Log out</a>
             <a href="#" class="flex-c-m p-lr-10 trans-04" v-else>Log in</a>
 
@@ -184,7 +184,7 @@
 <script>
 import axios from 'axios';
 import { API_BASE_URL } from '@/utils/config';
-export default {
+export default { 
   data() {
     return {
       userAuth: null
@@ -192,36 +192,56 @@ export default {
   },
   methods: {
     async logout() {
-      // Hiện thông báo xác nhận
       const confirmLogout = window.confirm('Bạn có muốn thoát không?');
       if (!confirmLogout) {
         return;
       }
 
       try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          console.log('No token found, user is already logged out');
+          return;
+        }
         await axios.post(`${API_BASE_URL}/logout`, null, {
-          withCredentials: true,
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
           },
         });
+        localStorage.removeItem('authToken');
         this.$store.commit('setUserRole', null);
         this.$router.push({ name: 'login' });
       } catch (error) {
         console.error('Error during logout:', error.response ? error.response.data : error.message);
       }
     },
+
     async fetchUser() {
       try {
-        const re = await axios.get(API_BASE_URL + '/me', {
-          withCredentials: true,
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          console.log('No token found, user is not authenticated');
+          return;
+        }
+
+        const response = await axios.get(API_BASE_URL + '/me', {
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           }
         });
-        this.userAuth = re.data;
+
+        this.userAuth = response.data;
       } catch (error) {
-        console.log('nothing to show');
+        if (error.response && error.response.status === 401) {
+          console.log('Token expired or invalid');
+          localStorage.removeItem('authToken');
+          this.$store.commit('setUserRole', null);
+          this.$router.push({ name: 'login' });
+        } else {
+          console.log('Error fetching user:', error);
+        }
       }
     }
   },
@@ -234,5 +254,6 @@ export default {
       }
     );
   }
-}
+};
+
 </script>
