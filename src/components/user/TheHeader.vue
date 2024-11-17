@@ -45,7 +45,7 @@
                 <router-link v-if="userAuth" to="/blogs">Blog</router-link>
               </li>
               <li>
-                <a href="about.html">About</a>
+                <router-link v-if="userAuth" to="/followed">Đã theo dõi</router-link>
               </li>
 
               <li>

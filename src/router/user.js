@@ -51,6 +51,11 @@ const home = [
         component: () => import("../views/user/review/AddReviewView.vue"),
         name:"review"
     },
+    {
+        path: "/followed",
+        component: () => import("../views/user/product/ProductFollowedView.vue"),
+        name:"followed"
+    },
 ];
 
 export default home;
