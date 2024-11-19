@@ -210,7 +210,8 @@ export default {
           },
         });
         localStorage.removeItem('authToken');
-        this.$store.commit('setUserRole', null);
+        localStorage.removeItem('userRole');
+        //this.$store.commit('setUserRole', null);
         this.$router.push({ name: 'login' });
       } catch (error) {
         console.error('Error during logout:', error.response ? error.response.data : error.message);
@@ -237,7 +238,7 @@ export default {
         if (error.response && error.response.status === 401) {
           console.log('Token expired or invalid');
           localStorage.removeItem('authToken');
-          this.$store.commit('setUserRole', null);
+          localStorage.removeItem('userRole');
           this.$router.push({ name: 'login' });
         } else {
           console.log('Error fetching user:', error);

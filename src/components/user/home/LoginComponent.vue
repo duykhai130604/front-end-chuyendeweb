@@ -79,8 +79,7 @@ export default {
 
                 if (response && response.data.token) {
                     localStorage.setItem('authToken', response.data.token);
-                    this.$store.commit('setUserRole', response.data.user.role);
-                    console.log("Role", this.$store.state.userRole);
+                    localStorage.setItem('userRole', response.data.user.role); 
                     this.$router.push('/');
                 } else {
                     console.log('Login failed');
