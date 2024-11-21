@@ -36,7 +36,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="block2-txt-child2 flex-r p-t-3">
                 <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
                   <img class="icon-heart1 dis-block trans-04" src="../../../assets/images/icons/icon-heart-01.png"
@@ -108,12 +107,12 @@
           </div>
         </div>
         <div class="flex-c-m flex-w w-full p-t-45" v-if="hasMoreSProducts && !loadingS">
-          <button  @click="loadMoreS" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+          <button v-if="userAuth" @click="loadMoreS" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
             Load More
           </button>
         </div>
         <!-- Loading Indicator -->
-        <div v-if="loading">Loading...</div>
+        <div v-if="loading && userAuth">Loading...</div>
       </div>
     </div>
   </section>
@@ -134,9 +133,9 @@ export default {
       hasMoreSProducts: true,
       sps: [],
       page: 1,
+      userAuth: null,
     };
   },
-  props: ['userAuth'],
   methods: {
     async fetchTopProducts() {
       try {
@@ -169,7 +168,6 @@ export default {
         );
 
         const newProducts = response.data.data;
-
         if (newProducts.length < 4) {
           this.hasMoreSProducts = false;
         }
@@ -234,6 +232,7 @@ export default {
       this.$router.push({ name: 'product', params: { id: encryptResponse.data.encrypted_id } });
     },
     checkUser() {
+      this.userAuth = localStorage.getItem('authToken');
       if (this.userAuth) {
         this.fetchProductsByUser();
         this.fetchSProducts();
@@ -248,7 +247,6 @@ export default {
   },
   created() {
     this.checkUser();
-    this.fetchSProducts();
   },
   watch: {
     userAuth(newValue, oldValue) {

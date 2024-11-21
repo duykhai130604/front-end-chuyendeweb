@@ -20,7 +20,6 @@
                                                 <th>STT</th>
                                                 <th>Tiêu đề</th>
                                                 <th>Tác giả</th>
-                                                <th>Hình ảnh</th> <!-- Thêm cột Hình ảnh -->
                                                 <th>Ngày tạo</th>
                                                 <th>Ngày cập nhật</th>
                                                 <th></th>
@@ -34,13 +33,6 @@
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ blog.title }}</td>
                                                 <td>{{ getName(blog.user_id) }}</td>
-                                                <td>
-                                                    <!-- Hiển thị hình ảnh nếu tồn tại -->
-                                                    <img :src="blog.image_url" alt="Blog Image" width="50" height="50"
-                                                        v-if="blog.image_url" />
-                                                    <!-- Thông báo nếu không có ảnh -->
-                                                    <span v-else>Không có ảnh</span>
-                                                </td>
                                                 <td>{{ formatDate(blog.created_at) }}</td>
                                                 <td>{{ formatDate(blog.updated_at) }}</td>
                                                 <td>

@@ -10,7 +10,7 @@
           </div>
 
           <div class="right-top-bar flex-w h-full">
-            <a href="#" class="flex-c-m trans-04 p-lr-25"> Help & FAQs </a>
+            <router-link to="/assitant" class="flex-c-m trans-04 p-lr-25"> Help & FAQs </router-link>
             <a href="#" class="flex-c-m trans-04 p-lr-25"> EN </a>
             <a href="#" class="flex-c-m trans-04 p-lr-25"> USD </a>
             <button style="color: aliceblue;" class="flex-c-m trans-04 p-lr-25" v-if="userAuth"

@@ -58,6 +58,11 @@ const home = [
         component: () => import("../views/user/product/ProductFollowedView.vue"),
         name:"followed"
     },
+    {
+        path: "/assitant",
+        component: () => import("../views/user/AssitantView.vue"),
+        name:"assitant"
+    },
 ];
 
 export default home;
