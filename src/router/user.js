@@ -20,7 +20,8 @@ const home = [
     {
         path: "/cart",
         component: () => import("../views/user/cart/CartView.vue"),
-        meta: { requiresAuth: true }
+        meta: {requiresAuth: true}
+            
     },
     {
         path: "/checkout",
@@ -30,6 +31,7 @@ const home = [
     {
         path: "/reset",
         component: () => import("../views/user/ResetView.vue"),
+        meta: { requiresAuth: true }
     },
     {
         path: "/blogs",
