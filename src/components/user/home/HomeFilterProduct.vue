@@ -5,7 +5,7 @@
         </div>
         <!-- Loading Spinner -->
         <div v-if="loading" class="loading-spinner">
-           <div class="spinner"></div> 
+            <div class="spinner"></div>
         </div>
 
         <div class="filter-container my-3">
@@ -16,15 +16,19 @@
                 <div v-if="showFilters" class="filter-content">
                     <button class="filter-option" data-filter="all">All Products</button>
                     <div class="btn-group" v-for="cate in parenCate" :key="cate.id">
-                        <button @click="getChild(cate.id)" class="filter-option" data-filter="women">{{ cate.name }}</button>
+                        <button :class="{ 'filter-option': true, 'active': activeId === cate.id }"
+                            @click="getChild(cate.id)" data-filter="women">
+                            {{ cate.name }}
+                        </button>
                     </div>
                     <div class="btn-category" v-for="cate in child" :key="cate.id">
-                        <div @click="getProducts(cate.id)" class="btn child-category">{{ cate.name }}</div>
+                        <div @click="getProducts(cate.id)" :class="{ 'btn child-category': true, 'active': activeId === cate.id }">{{ cate.name }}</div>
                     </div>
                     <div class="sort-container">
                         <label class="star-label">Select Star Rating:</label>
                         <div class="star-rating">
-                            <span v-for="star in 5" :key="star" :class="['star', { selected: star <= selectedRating }]" @click="selectRating(star)">
+                            <span v-for="star in 5" :key="star" :class="['star', { selected: star <= selectedRating }]"
+                                @click="selectRating(star)">
                                 <font-awesome-icon icon="star" />
                             </span>
                         </div>
@@ -37,7 +41,8 @@
         </div>
 
         <div class="row isotope-grid" v-if="!loading">
-            <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women" v-for="product in products" :key="product.id">
+            <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women" v-for="product in products"
+                :key="product.id">
                 <div class="block2">
                     <div class="block2-pic hov-img0">
                         <img :src="product.thumbnail" alt="IMG-PRODUCT" />
@@ -54,8 +59,9 @@
                                 {{ product.name }}
                             </a>
                             <div v-if="product.ratings_count !== 0" class="stars">
-                                {{ avgRating(product.ratings_avg_rating) ?? '0' }} 
-                                <span v-for="n in 5" :key="n" class="star" :class="{ 'filled': n <= product.ratings_avg_rating }">
+                                {{ avgRating(product.ratings_avg_rating) ?? '0' }}
+                                <span v-for="n in 5" :key="n" class="star"
+                                    :class="{ 'filled': n <= product.ratings_avg_rating }">
                                     ★
                                 </span>({{ product.ratings_count }})
                             </div>
@@ -102,7 +108,8 @@ export default {
             cates: [],
             parenCate: [],
             child: [],
-            loading: false,  // Biến để theo dõi trạng thái loading
+            loading: false, 
+            activeId:null, 
         };
     },
     computed: {
@@ -116,6 +123,8 @@ export default {
     },
     methods: {
         async getChild(parent) {
+            this.activeId = parent;
+
             this.child = this.cates.filter(c => c.parent_id === parent);
         },
         async getCates() {
@@ -131,6 +140,7 @@ export default {
             }
         },
         async getProducts(cate) {
+            this.activeId = cate;
             this.loading = true;  // Bắt đầu loading
             const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${cate}`);
             try {
@@ -296,30 +306,46 @@ export default {
 
 /* css vo day */
 .child-category {
-    border: 3px solid #ccc;
-    margin: 5px;
+    color: #FFF;
+    width: 150px;
+    text-align: center;
+    background: #30ddc3;
+    margin: 5px 50px;
+    transition: all 0.3s;
 }
+
 .loading-spinner {
-  text-align: center;
-  font-size: 20px;
-  color: #555;
+    text-align: center;
+    font-size: 20px;
+    color: #555;
 }
+
 .spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 2s linear infinite;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 2s linear infinite;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
+    0% {
+        transform: rotate(0deg);
+    }
 
-  100% {
-    transform: rotate(360deg);
-  }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.active {
+    box-shadow: 0 0 15px #c0c0c0;
+    transform: translateZ(50px);
+}
+.btn-group{
+    perspective: 500px;
+}
+.btn-category{
+    perspective: 800px;
 }
 </style>
