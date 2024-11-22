@@ -4,7 +4,7 @@
             <h3 class="fw-bold mb-3">Sửa Blog</h3>
         </div>
         <form @submit.prevent="updateBlog">
-            <!-- Tiêu đề Blog -->           
+            <!-- Tiêu đề Blog -->
             <div class="mb-3">
                 <label for="title" class="form-label">Tiêu đề Blog</label>
                 <input type="text" class="form-control" id="title" v-model="blog.title" placeholder="Nhập tiêu đề blog"
@@ -24,8 +24,9 @@
                 <label for="thumbnail" class="form-label">Hình ảnh</label>
                 <input type="file" class="form-control" id="thumbnail" @change="handleFileUpload" accept="image/*" />
                 <div v-if="blog.thumbnail">
-                    <img :src="blog.thumbnail" alt="Uploaded Image" class="img-thumbnail" style="max-width: 200px;" />
+                    <img :src="getThumbnailUrl(blog.thumbnail)" alt="Thumbnail">
                 </div>
+
             </div>
             <div class="mb-3">
                 <label for="status" class="form-label">Trạng thái</label>
@@ -37,9 +38,8 @@
             <!-- Buttons -->
             <div class="d-flex justify-content-end">
                 <button type="button" class="btn btn-danger me-2" @click="cancel">Hủy</button>
-                <button type="submit" class="btn btn-primary"
-                    :disabled="errorMessage || !blog.title || !blog.content">
-                   Lưu
+                <button type="submit" class="btn btn-primary" :disabled="errorMessage || !blog.title || !blog.content">
+                    Lưu
                 </button>
             </div>
         </form>
@@ -77,6 +77,10 @@ export default {
                 this.errorTitle = '';
             }
         },
+        getThumbnailUrl(thumbnail) {
+            const baseURL = process.env.VUE_APP_API_BASE_URL || 'http://127.0.0.1:8000';
+            return `${baseURL}/storage/${thumbnail}`;
+        },
         cancel() {
             this.$router.push({ name: 'list-blogs' }); // Đường dẫn đến danh sách blog
         },
@@ -88,30 +92,45 @@ export default {
                 console.error("Có lỗi xảy ra khi lấy thông tin blog:", error);
             }
         },
-        async updateBlog() {
-            try {
-                const formData = new FormData();
-                formData.append('id', this.idEncode);
-                formData.append('title', this.blog.title);
-                formData.append('content', this.blog.content);
-                formData.append('user_id', this.blog.user_id);
-                if (this.blog.thumbnail) {
-                    formData.append('thumbnail', this.blog.thumbnail);
-                }
+        async updateBlog() { 
+    try {
+        // Tạo FormData để gửi dữ liệu
+        const formData = new FormData();
+        formData.append('id', this.idEncode);
+        formData.append('title', this.blog.title);
+        formData.append('content', this.blog.content);
+        formData.append('status', this.blog.status);
 
-                const response = await axios.post('http://127.0.0.1:8000/api/update-blog', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-                if (response.status === 200) {
-                    alert("Sửa blog thành công!!!");
-                    this.$router.push({ name: 'list-blogs' }); // Đường dẫn đến danh sách blog
+        // Nếu có thumbnail, thêm vào FormData
+        if (this.blog.thumbnail) {
+            formData.append('thumbnail', this.blog.thumbnail);
+        }
+
+        // Gửi request POST với FormData
+        const response = await axios.post(
+            'http://127.0.0.1:8000/api/update-blog',
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`, // Lấy token từ localStorage
                 }
-            } catch (error) {
-                console.error("Có lỗi xảy ra khi cập nhật blog:", error);
             }
-        },
+        );
+
+
+        // Nếu thành công, chuyển hướng đến trang danh sách blog
+        if (response.status === 200) {
+            alert("Sửa blog thành công!!!");
+            this.$router.push({ name: 'list-blogs' }); // Đường dẫn đến danh sách blog
+        }
+    } catch (error) {
+        console.error("Có lỗi xảy ra khi cập nhật blog:", error);
+        alert("Đã xảy ra lỗi khi cập nhật blog. Vui lòng thử lại!");
+    }
+}
+
+        ,
         handleFileUpload(event) {
             this.blog.thumbnail = event.target.files[0];
         }

@@ -15,7 +15,8 @@
             <div class="mb-3">
                 <label for="content" class="form-label">Nội dung</label>
                 <div style="height: auto;">
-                    <ckeditor  rows="6"  class="form-control" required id="content"  placeholder="Nhập nội dung blog" :editor="editor" v-model="content" @ready="onReady" />
+                    <ckeditor rows="6" class="form-control" required id="content" placeholder="Nhập nội dung blog"
+                        :editor="editor" v-model="content" @ready="onReady" />
                 </div>
             </div>
             <!-- Hình thu nhỏ -->
@@ -54,7 +55,7 @@ export default {
             errorMessage: '',
             thumbnail: null,
             editor: ClassicEditor,
-            status:0
+            status: 1
 
         };
     },
@@ -72,27 +73,36 @@ export default {
             this.$router.push({ name: 'list-blogs' });
         },
         async addBlog() {
-            try {
-                if (!this.errorMessage && this.title && this.content && this.user_id) {
-                    const formData = new FormData();
-                    formData.append('title', this.title);
-                    formData.append('content', this.content);
-                    formData.append('thumbnail', this.thumbnail);
-                    formData.append('user_id', this.user_id);
-                    formData.append('status', this.status);
-                    const response = await axios.post('http://127.0.0.1:8000/api/add-blog', formData);
-                    if (response) {
-                        alert("Blog đã được thêm thành công!");
-                        this.$router.push({ name: 'list-blogs' });
-                    }
-                }
-            } catch (error) {
-                console.error("Có lỗi xảy ra khi thêm blog mới:", error);
-                alert("Đã xảy ra lỗi trong quá trình thêm blog. Vui lòng thử lại!");
+    try {
+        const formData = new FormData();
+        formData.append('title', this.title);
+        formData.append('content', this.content);
+        formData.append('thumbnail', this.thumbnail);   
+        formData.append('status', this.status);
+
+        const response = await axios.post(
+            'http://127.0.0.1:8000/api/add-blog',
+            formData,
+            {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                    'Content-Type': 'multipart/form-data',
+                },
             }
-        },
+        );
+        if (response) {
+                alert("Blog đã được thêm thành công!");
+                this.$router.push({ name: 'list-blogs' });
+            }
+    } catch (error) {
+        console.error("Error uploading blog:", error);
+    }
+}
+        ,
         handleFileUpload(event) {
+            console.log("Event triggered:", event);
             this.thumbnail = event.target.files[0];
+            console.log("Selected file:", this.thumbnail);
         }
     }
 };

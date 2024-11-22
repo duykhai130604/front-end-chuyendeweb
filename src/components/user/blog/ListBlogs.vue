@@ -9,7 +9,9 @@
                             <div v-for="blog in filteredBlogs" :key="blog.id" class="p-b-63 blog-item">
                                 <!-- Hình ảnh blog -->
                                 <a href="blog-detail.html" class="hov-img0 how-pos5-parent">
-                                    <img :src="blog.thumbnail" class="img" alt="IMG-BLOG">
+                                    <div v-if="blog.thumbnail">
+                                        <img :src="getThumbnailUrl(blog.thumbnail)" alt="Thumbnail">
+                                    </div>
                                     <div class="flex-col-c-m size-123 bg9 how-pos5">
                                         <!-- Ngày tạo blog -->
                                         <span class="ltext-107 cl2 txt-center">
@@ -344,6 +346,10 @@ export default {
         }
     },
     methods: {
+        getThumbnailUrl(thumbnail) {
+            const baseURL = process.env.VUE_APP_API_BASE_URL || 'http://127.0.0.1:8000';
+            return `${baseURL}/storage/${thumbnail}`;
+        },
         async fetchBlogs(page = 1) {
             try {
                 this.selectedAuthorId = null;
@@ -394,7 +400,7 @@ export default {
                 this.selectedAuthorId = id;
                 const encryptResponse = await axios.get(`${API_BASE_URL}/encrypt/${id}`);
                 const idCrypt = encryptResponse.data.encrypted_id;
-                const response = await axios.get(API_BASE_URL + '/get-blog-by-author/' + idCrypt);                
+                const response = await axios.get(API_BASE_URL + '/get-blog-by-author/' + idCrypt);
                 this.blogs = response.data.data.filter(blog => blog.status === 1);
                 this.totalPages = response.data.last_page;
                 this.currentPage = response.data.current_page;
@@ -403,24 +409,24 @@ export default {
             }
         },
         async loadMoreAuthors() {
-        try {
-            this.page++;
-            const response = await axios.get(`${API_BASE_URL}/authors-count-blog?page=${this.page}`);
-            const newAuthors = response.data.data;
+            try {
+                this.page++;
+                const response = await axios.get(`${API_BASE_URL}/authors-count-blog?page=${this.page}`);
+                const newAuthors = response.data.data;
 
-            if (newAuthors.length >0) {
-                const newAuthorsFiltered = newAuthors.filter(newAuthor => 
-                    !this.authors.some(existingAuthor => existingAuthor.id === newAuthor.id)
-                );
-                  // Increment the page number
-                this.authors = [...this.authors, ...newAuthorsFiltered];  // Append new authors
-            } else {
-                this.hasMoreAuthors = false;  // No more authors to load
+                if (newAuthors.length > 0) {
+                    const newAuthorsFiltered = newAuthors.filter(newAuthor =>
+                        !this.authors.some(existingAuthor => existingAuthor.id === newAuthor.id)
+                    );
+                    // Increment the page number
+                    this.authors = [...this.authors, ...newAuthorsFiltered];  // Append new authors
+                } else {
+                    this.hasMoreAuthors = false;  // No more authors to load
+                }
+            } catch (error) {
+                console.error('Error loading more authors:', error);
             }
-        } catch (error) {
-            console.error('Error loading more authors:', error);
-        }
-    },
+        },
     },
     mounted() {
         this.fetchBlogs();
