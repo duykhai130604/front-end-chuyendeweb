@@ -67,7 +67,7 @@ export default {
       axios.request(config)
         .then((response) => {
           //console.log(JSON.stringify(response.data));
-          console.log(response.data).answer;
+          //console.log(response.data.answer);
         })
         .catch((error) => {
           console.log(error);
