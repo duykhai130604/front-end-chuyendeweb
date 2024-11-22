@@ -37,11 +37,16 @@
                         <div v-else>
                             <p>Đang tải thông tin đánh giá...</p>
                         </div>
+                        <div class="my-2">
+                            <span>Theo dõi: </span>
+                            <font-awesome-icon :icon="['fas', 'bell']"
+                                :class="{ 'text-success': isFollowing, 'text-muted': !isFollowing }" @click="follow" />
+                        </div>
                         <span class="mtext-106 cl2" :class="{ 'old-price': product.discount > 0 }">{{ product.price ?
                             `${product.price.toFixed(2)}` : 'N/A'
                             }}VND</span>
                         <div class="discount" v-if="product.discount > 0"> <span>-{{ product.discount }}%</span></div>
-                        <p class="mtext-105 cl2 p-t-23">{{ primaryPrice }} VND</p>
+                        <p v-if="product.discount > 0" class="mtext-105 cl2 p-t-23">{{ primaryPrice }}VND</p>
                         <div id="product-options">
                             <!-- Chọn màu sắc -->
                             <div>
@@ -148,9 +153,12 @@ import axios from 'axios';
 import { API_BASE_URL } from '@/utils/config';
 import ButtonComponent from '@/components/common/ButtonComponent.vue';
 import { useToast } from 'vue-toastification';
-
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
+library.add(faBell);
 export default {
-    components: { ButtonComponent },
+    components: { ButtonComponent, FontAwesomeIcon },
     setup() {
         const toast = useToast();
         return { toast };
@@ -165,6 +173,7 @@ export default {
                 { id: 'reviews', name: 'Reviews' }
             ],
             productId: null,
+            isFollowing: false,
             product: {},
             similarProducts: [],
             sizes: [],
@@ -187,6 +196,78 @@ export default {
     },
 
     methods: {
+        async checkFollow() {
+            const token = localStorage.getItem('authToken');
+            try {
+                const response = await axios.post(
+                    `${API_BASE_URL}/checkFollow`,
+                    { product_id: this.productId },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    }
+                );
+                if (response.data.isFollowing) {
+                    this.isFollowing = true; 
+                } else {
+                    this.isFollowing = false; 
+                }
+            } catch (error) {
+                console.error('Error checking follow status:', error);
+            }
+        },
+        async follow() {
+            this.productId = this.$route.params.id;
+            const toast = useToast();
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    toast.error('Token is missing! Please log in again.', {
+                        position: 'top-right',
+                        duration: 2000,
+                    });
+                    return;
+                }
+                const response = await axios.post(
+                    `${API_BASE_URL}/followProduct`,
+                    { productId: this.productId },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    }
+                );
+                if (response.data && response.data.message) {
+                    if (response.data.message === 'Followed successfully!') {
+                        this.isFollowing = true,
+                            toast.success('Follow thành công!', {
+                                position: 'top-right',
+                                duration: 2000,
+                            });
+                    } else {
+                        this.isFollowing = false;
+                        toast.success('Bạn đã hủy Follow.', {
+                            position: 'top-right',
+                            duration: 2000,
+                        });
+                    }
+                } else {
+                    toast.error('Failed to follow the product!', {
+                        position: 'top-right',
+                        duration: 2000,
+                    });
+                }
+            } catch (error) {
+                console.error('Error occurred during follow request:', error);
+                toast.error('An error occurred while following the product!', {
+                    position: 'top-right',
+                    duration: 2000,
+                });
+            }
+        },
         changePage(page) {
             if (page < 1 || page > this.totalPages) return;
             this.currentPage = page;
@@ -337,6 +418,7 @@ export default {
         this.fetchProductDetails();
         this.fecthReviews();
         this.fetchRating();
+        this.checkFollow();
     },
 };
 

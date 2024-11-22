@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import userRoutes from "./user.js";
 import adminRoutes from "./admin.js"; 
-import axios from "axios"; 
+//import axios from "axios"; 
 const routes = [...userRoutes, ...adminRoutes];
 
 const router = createRouter({
@@ -24,16 +24,16 @@ router.beforeEach((to, from, next) => {
     }
 });
 
-axios.interceptors.response.use(
-    response => response,
-    error => {
-        if (error.response && error.response.status === 401) {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userRole');
-            router.push({ name: 'login' });
-        }
-        return Promise.reject(error);
-    }
-);
+// axios.interceptors.response.use(
+//     response => response,
+//     error => {
+//         if (error.response && error.response.status === 401) {
+//             localStorage.removeItem('authToken');
+//             localStorage.removeItem('userRole');
+//             router.push({ name: 'login' });
+//         }
+//         return Promise.reject(error);
+//     }
+// );
 
 export default router;
