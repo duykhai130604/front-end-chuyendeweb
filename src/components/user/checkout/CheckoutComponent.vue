@@ -79,8 +79,10 @@ export default {
         fetchCartItems() {
             const config = {
                 method: 'get',
-                withCredentials: true,
                 url: API_BASE_URL + '/getCarts',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
             };
 
             axios.request(config)
@@ -94,7 +96,9 @@ export default {
         checkout() {
             const config = {
                 method: 'post',
-                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                },
                 url: API_BASE_URL + '/checkout',
                 data: {
                     phone: this.phone,

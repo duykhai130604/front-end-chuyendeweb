@@ -206,10 +206,9 @@ export default {
                 method: 'post',
                 url: `${API_BASE_URL}/admin/editProduct`,
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 },
-                withCredentials: true,
-                data: formData,
             };
 
             axios.request(config)

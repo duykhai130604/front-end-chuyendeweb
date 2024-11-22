@@ -395,9 +395,11 @@ export default {
             const config = {
                 method: 'post',
                 url: API_BASE_URL + '/addToCart',
-                withCredentials: true,
                 data: {
                     product_variant_id: this.variant,
+                },
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }
             };
             axios.request(config)

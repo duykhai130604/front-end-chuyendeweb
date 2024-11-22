@@ -247,6 +247,7 @@ export default {
   },
   created() {
     this.checkUser();
+    this.fetchSProducts();
   },
   watch: {
     userAuth(newValue, oldValue) {
