@@ -62,7 +62,7 @@ export default {
       const config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: "http://127.0.0.1:8888/chat-web",
+        url: "https://chatbot-chuyendeweb.azurewebsites.net/chat-web",
         headers: {
           "Content-Type": "application/json",
         },
