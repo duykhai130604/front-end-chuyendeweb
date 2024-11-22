@@ -19,8 +19,6 @@
     "chart.js": "^4.4.6",
     "core-js": "^3.8.3",
     "jquery": "^3.7.1",
-    "laravel-echo": "^1.17.0",
-    "pusher-js": "^8.4.0-rc2",
     "vue": "^3.2.13",
     "vue-router": "^4.4.5",
     "vue-toastification": "^2.0.0-rc.5",
