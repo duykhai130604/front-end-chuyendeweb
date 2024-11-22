@@ -212,7 +212,7 @@ export default {
                 const response = await axios.get(`${API_BASE_URL}/getProductbyID/${this.productId}`, {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token??null}` 
+                        'Authorization': `Bearer ${token ?? null}`
                     }
                 });
                 this.product = response.data;
@@ -314,9 +314,11 @@ export default {
             const config = {
                 method: 'post',
                 url: API_BASE_URL + '/addToCart',
-                withCredentials: true,
                 data: {
                     product_variant_id: this.variant,
+                },
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
                 }
             };
             axios.request(config)

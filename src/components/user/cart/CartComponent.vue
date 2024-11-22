@@ -109,15 +109,15 @@ export default {
     },
     computed: {
         subtotal() {
-        return this.cartItems.reduce((total, item) => {
-            const price = parseInt(item.product_price);  // Giá sản phẩm
-            const discount = parseInt(item.product_discount);  // Giảm giá
-            const quantity = parseInt(item.variant_quantity);  // Số lượng sản phẩm
-            // Tính giá sản phẩm sau giảm giá
-            const priceAfterDiscount = Math.floor(price * (1 - discount / 100));
-            return total + (priceAfterDiscount * quantity);
-        }, 0);
-    }
+            return this.cartItems.reduce((total, item) => {
+                const price = parseInt(item.product_price);  // Giá sản phẩm
+                const discount = parseInt(item.product_discount);  // Giảm giá
+                const quantity = parseInt(item.variant_quantity);  // Số lượng sản phẩm
+                // Tính giá sản phẩm sau giảm giá
+                const priceAfterDiscount = Math.floor(price * (1 - discount / 100));
+                return total + (priceAfterDiscount * quantity);
+            }, 0);
+        }
     },
     methods: {
         increaseQuantity(index) {
@@ -134,21 +134,30 @@ export default {
         },
         updateQuantity(item) {
             axios.put(`${API_BASE_URL}/updateCartItem`, {
-                variant_id: item.variant_id,
+                variant_id: item.variant_id, // Dữ liệu gửi đi
                 quantity: item.variant_quantity
-            }, { withCredentials: true })
+            }, {
+                headers: { // Header chứa token
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            })
                 .then((response) => {
-                    console.log(response.data.message);
+                    console.log(response.data.message); // Xử lý thành công
                 })
                 .catch((error) => {
-                    console.error(error.response.data.error);
+                    console.error(error.response.data.error); // Xử lý lỗi
                 });
         },
+
         formatCurrency(value) {
             return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
         },
         removeItem(variant_id) {
-            axios.delete(`${API_BASE_URL}/deleteCartItem`, { data: { variant_id: variant_id }, withCredentials: true })
+            axios.delete(`${API_BASE_URL}/deleteCartItem`, {
+                data: { variant_id: variant_id }, headers: { // Header chứa token
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            })
                 .then((response) => {
                     this.cartItems = this.cartItems.filter(item => item.variant_id !== variant_id);
                     console.log(response.data.message);
@@ -158,22 +167,26 @@ export default {
                 });
         },
         fetchCartItems() {
-            axios.get(`${API_BASE_URL}/getCarts`, { withCredentials: true })
+            axios.get(`${API_BASE_URL}/getCarts`, {
+                headers: { // Đặt headers trong object config
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            })
                 .then((response) => {
+                    // Xử lý dữ liệu trả về từ API
                     this.cartItems = response.data.cart.map(item => {
-                        // Tính toán lại giá sản phẩm sau khi áp dụng giảm giá
+                        // Tính toán giá sau khi áp dụng giảm giá
                         item.product_price_after_discount = item.product_price * (1 - item.product_discount / 100);
                         return item;
                     });
+                    console.log('Cart items fetched successfully:', this.cartItems); // Log dữ liệu cart items
                 })
                 .catch((error) => {
-                    console.log(error);
+                    // Xử lý lỗi
+                    console.error('Error fetching cart items:', error.response ? error.response.data : error);
                 });
-        },
-        handlePayment() {
-            console.log("Số điện thoại:", this.phone);
-            console.log("Địa chỉ:", this.address);
         }
+
     },
 
     mounted() {
