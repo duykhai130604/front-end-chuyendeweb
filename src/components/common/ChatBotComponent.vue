@@ -13,78 +13,89 @@
       </div>
       <div class="chat-body">
         <div v-for="(message, index) in history" :key="index" class="chat-message" :class="message.role">
-          <span>{{ message.content }}</span>
+          <span v-html="message.content"></span>
         </div>
       </div>
       <div class="chat-footer">
-        <input v-model="newMessage" type="text" placeholder="Nhập tin nhắn..." @keydown.enter="sendMessage" />
-        <button @click="sendMessage">Gửi</button>
+        <input v-model="newMessage" type="text" placeholder="Nhập tin nhắn..." :disabled="isSending"
+          @keydown.enter="sendMessage" />
+        <button :disabled="isSending" @click="sendMessage">
+          {{ isSending ? "Đang gửi..." : "Gửi" }}
+        </button>
       </div>
     </div>
   </div>
 </template>
-
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
       isChatOpen: false,
-      history: [
-        // { role: "assistant", content: "Xin chào! Tôi có thể giúp gì cho bạn?" },
-        // { role: "user", content: "Tôi cần hỗ trợ về sản phẩm." },
-        // { role: "assistant", content: "Vui lòng cho tôi biết chi tiết vấn đề." },
-      ],
+      history: [],
       newMessage: "",
+      isSending: false, // Biến trạng thái để tắt/mở input và nút
     };
   },
   methods: {
     toggleChat() {
       this.isChatOpen = !this.isChatOpen;
     },
-    sendMessage() {
+    async sendMessage() {
       if (this.newMessage.trim() === "") return;
 
-      this.history.push({ role: "user", content: this.newMessage });
+      // Tắt input và nút gửi
+      this.isSending = true;
 
-      //this.newMessage = "";
+      // Lưu tin nhắn của người dùng vào biến tạm thời mà chưa thêm vào lịch sử
+      const userMessage = { role: "user", content: this.newMessage };
 
-      const axios = require('axios');
-      let data = JSON.stringify({
-        "history": this.history,
-        "question": this.newMessage
+      // Gửi yêu cầu đến API mà không bao gồm userMessage trong history
+      const data = JSON.stringify({
+        history: this.history,  // Lịch sử chat đã có nhưng không bao gồm newMessage
+        question: this.newMessage,
       });
 
-      let config = {
-        method: 'post',
+      this.newMessage = ""; // Xóa nội dung tin nhắn
+
+      const config = {
+        method: "post",
         maxBodyLength: Infinity,
-        url: 'https://chatbot-chuyendeweb.azurewebsites.net/chat-web',
+        url: "https://api-chat-chuyendeweb.azurewebsites.net/chat-web",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        data: data
+        data: data,
       };
 
-      axios.request(config)
-        .then((response) => {
-          //console.log(JSON.stringify(response.data));
-          console.log(response.data.answer);
-        })
-        .catch((error) => {
-          console.log(error);
+      try {
+        // Gửi request và chờ phản hồi từ server
+        const response = await axios.request(config);
+
+        // Thêm tin nhắn của người dùng vào lịch sử sau khi nhận được phản hồi
+        this.history.push(userMessage);
+
+        // Thêm câu trả lời từ assistant vào lịch sử chat
+        this.history.push({ role: "assistant", content: response.data.answer });
+      } catch (error) {
+        console.error(error);
+
+        // Nếu có lỗi, thêm thông báo lỗi từ assistant vào lịch sử
+        this.history.push(userMessage);  // Vẫn thêm tin nhắn người dùng vào lịch sử
+        this.history.push({
+          role: "assistant",
+          content: "Đã xảy ra lỗi, vui lòng thử lại.",
         });
-
-      // setTimeout(() => {
-      //   this.history.push({
-      //     role: "assistant",
-      //     content:
-      //       "Cảm ơn bạn đã gửi tin nhắn! Chúng tôi sẽ phản hồi sớm.",
-      //   });
-      // }, 1000);
-
+      } finally {
+        // Mở lại input và nút gửi
+        this.isSending = false;
+      }
     },
-  },
+  }
 };
 </script>
+
 
 
 <style scoped>
@@ -112,8 +123,8 @@ export default {
 
 /* Chat Window */
 .chat-window {
-  width: 300px;
-  height: 400px;
+  width: 500px;
+  height: 700px;
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 10px;
